@@ -56,7 +56,6 @@ const App = () => {
 
       </BrowserRouter>
 
-      {/* <Toaster /> */}
     </div>
   )
 }
