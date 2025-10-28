@@ -1,7 +1,6 @@
 let express = require("express")
 const rt = require("./routes/rt")
-let cors=require('cors');
-const { upload, parse } = require("./controllers/mainCon");
+let cors=require('cors')
 require('dotenv').config();
 
 const port = process.env.PORT || 5000;
@@ -19,6 +18,6 @@ app.get('/',(req,res)=>{
     res.send("Yup, it's working")
 })
 
-app.post("/parse", upload.single('file'), parse)
+app.use('/',rt)
 
 app.listen(port)

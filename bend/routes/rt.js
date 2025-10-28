@@ -1,8 +1,8 @@
-// let express=require('express')
-// const { upload, parse } = require('../controllers/mainCon')
+let express=require('express')
+const { upload, parse } = require('../controllers/mainCon')
 
-// let rt=express.Router()
+let rt=express.Router()
 
-// rt
+rt.post("/parse",upload.single('file'),parse)
 
-// module.exports=rt
+module.exports=rt
