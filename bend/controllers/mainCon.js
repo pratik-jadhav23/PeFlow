@@ -24,7 +24,7 @@ function parseTransactionBlock(block) {
     };
 }
 
-let groupAmount = (transactions, key) => {
+let groupAmount = (transactions) => {
     let debitAmount = transactions.reduce((acc, tx) => {
         const amt = parseFloat(tx.amount);
         if (tx.type === 'DEBIT') acc.debit += amt;
@@ -127,6 +127,10 @@ const getStats = transactions => {
 
 let parse = async (req, res) => {
     try {
+        if (!req.file || !req.file.buffer) {
+            return res.status(400).json({ error: 'No file uploaded' });
+        }
+
         let data = await pdf(req.file.buffer)
 
         let text = data.text
@@ -137,9 +141,15 @@ let parse = async (req, res) => {
 
         const transactions = matches.map(m => parseTransactionBlock(m[0]));
 
+        if (transactions.length === 0) {
+            return res.status(422).json({ message: 'No transactions found. Please upload a valid PDF.' });
+        }
+
         const type = groupAmount(transactions)
 
-        res.json({
+        console.log(transactions)
+
+        res.status(200).json({
             success: true,
             transactions,
             stats: {
@@ -158,10 +168,8 @@ let parse = async (req, res) => {
         })
     }
     catch (err) {
-        res.json({
-            success: false,
-            "err": err.message
-        })
+        console.log('error in parse controller', err.message)
+        res.status(500).json({ message: 'Internal server error' })
     }
 }
 

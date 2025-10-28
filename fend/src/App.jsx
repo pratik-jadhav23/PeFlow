@@ -3,6 +3,8 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import Nav from './components/Nav'
 import Insights from './pages/Insights'
 import LandingPage from './pages/LandingPage'
+import HowToDownloadPDF from './components/HowToDownloadPDF'
+import { Toaster } from 'react-hot-toast';
 
 const App = () => {
 
@@ -16,9 +18,45 @@ const App = () => {
           <Routes>
             <Route path='/' element={<LandingPage setData={setData}/>}/>
             <Route path='/insights' element={data ? <Insights data={data} /> : <Navigate to='/'/>} />
+            <Route path='*' element={<Navigate to='/'/>} />
+            <Route path='/HowToDownloadPDF' element={<HowToDownloadPDF />} />
           </Routes>
         </main>
+        <footer className="w-full mt-10 sm:mt-16 py-6 text-center text-base text-[12px] sm:text-[14px] text-gray-600 bg-white/90 backdrop-blur-sm border-t border-gray-200">
+          <p className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 px-4 flex-wrap">
+            <span>
+              © {new Date().getFullYear()}{" "}
+              <span className="font-semibold">PeFlow</span>
+            </span>
+
+            <a
+              href="https://github.com/yourusername/peflow"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#5A2DAF] hover:underline"
+            >
+              About this project
+            </a>
+
+            <a
+              href="https://yourportfolio.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#5A2DAF] hover:underline"
+            >
+              Contact Us
+            </a>
+
+            <span>
+              Developed with ❤️ by {" "}
+              <span className="font-semibold text-[#5A2DAF]">Siva Garapati</span>
+            </span>
+          </p>
+        </footer>
+
       </BrowserRouter>
+
+      {/* <Toaster /> */}
     </div>
   )
 }
