@@ -75,7 +75,7 @@ const UploadForm = ({ setData }) => {
             const formData = new FormData();
             formData.append("file", file);
 
-            const res = await axios.post(`${import.meta.env.VITE_BEND_URL}/parse`, formData);
+            const res = await axios.post(`${import.meta.env.VITE_API_URL}/parse`, formData);
 
             if (!res.data.success || res.data?.transactions?.length === 0) {
                 setStatus((s) => ({ ...s, msg: "No data in the file" }));
