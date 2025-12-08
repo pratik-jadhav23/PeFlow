@@ -75,7 +75,7 @@ const UploadForm = ({ setData }) => {
             const formData = new FormData();
             formData.append("file", file);
 
-            const res = await axios.post(`${import.meta.env.VITE_API_URL}/parse`, formData);
+            const res = await axios.post(`${import.meta.env.VITE_API_URL}/parse-secure`, formData);
 
             if (!res.data.success || res.data?.transactions?.length === 0) {
                 setStatus((s) => ({ ...s, msg: "No data in the file" }));
@@ -93,7 +93,7 @@ const UploadForm = ({ setData }) => {
             toast.error(err?.response?.data?.message || err.message)
             setStatus((s) => ({ ...s, msg: err?.response?.data?.message || err.message}));
         } finally {
-            setStatus((s) => ({ ...s, loading: false }));
+            setStatus((s) => ({ ...s, loading: false })); 
         }
     };
 

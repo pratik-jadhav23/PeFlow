@@ -1,5 +1,6 @@
 let express = require("express")
 const rt = require("./routes/rt")
+const securePdfRoute = require("./routes/securePdfRoute")
 let cors=require('cors')
 require('dotenv').config();
 
@@ -18,6 +19,7 @@ app.get('/',(req,res)=>{
     res.send("Yup, it's working")
 })
 
-app.use('/',rt)
+// app.use('/',rt)
+app.use('/',securePdfRoute)
 
 app.listen(port)
