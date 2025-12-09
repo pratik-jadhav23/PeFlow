@@ -15,7 +15,8 @@ const parseSecurePdf = async (req, res) => {
         }
 
         // Get password from request body (if provided)
-        const password = req.body.password || "PRAT2307";
+        // console.log(req.body);
+        const password = req.body.pdfPassword || "";
         console.log(password);
          
 

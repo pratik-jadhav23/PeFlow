@@ -13,6 +13,11 @@ const UploadForm = ({ setData }) => {
         loading: false,
     });
     const fileInputRef = useRef(null);
+    const [pdfType, setPdfType] = useState({
+        type: "normal",
+        password: "",
+        checked: false
+    });
 
     // Drag events
     const handleDrag = (e) => {
@@ -74,14 +79,30 @@ const UploadForm = ({ setData }) => {
         try {
             const formData = new FormData();
             formData.append("file", file);
+            pdfType.password && formData.append("pdfPassword", pdfType.password);
 
-            const res = await axios.post(`${import.meta.env.VITE_API_URL}/parse-secure`, formData);
+            console.log(formData);
+            console.log(pdfType);
+            let res;
+
+            if(pdfType.type === "normal") {
+                //for normal pdfs
+                res = await axios.post(`${import.meta.env.VITE_API_URL}/parse`, formData);
+                // res = await axios.post(`http://localhost:5000/parse`, formData);
+                
+            }
+            else {
+                //for secure pdfs
+                res = await axios.post(`http://localhost:5000/secure/parse-secure`, formData);
+            }
+
 
             if (!res.data.success || res.data?.transactions?.length === 0) {
                 setStatus((s) => ({ ...s, msg: "No data in the file" }));
             } else {
                 setData(res.data);
                 // ✅ Clear only on success
+                console.log(res.data);
 
                 setFile(null);
                 if (fileInputRef.current) {
@@ -89,11 +110,11 @@ const UploadForm = ({ setData }) => {
                 }
                 navigate('/insights'); // Navigate to insights page
             }
-        } catch(err) {
+        } catch (err) {
             toast.error(err?.response?.data?.message || err.message)
-            setStatus((s) => ({ ...s, msg: err?.response?.data?.message || err.message}));
+            setStatus((s) => ({ ...s, msg: err?.response?.data?.message || err.message }));
         } finally {
-            setStatus((s) => ({ ...s, loading: false })); 
+            setStatus((s) => ({ ...s, loading: false }));
         }
     };
 
@@ -103,6 +124,23 @@ const UploadForm = ({ setData }) => {
             <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 mb-5 text-center">
                 Upload your Transactions PDF
             </h2>
+            <h3 className="text-sm sm:text-md md:text-lg font-semibold text-gray-800 mb-5 text-center">select pdf type</h3>
+            <div className="flex items-center gap-2 sm:gap-3">
+                <input type="radio" name="pdfType" id="" value="normal" onChange={(e) =>{
+                    console.log(e.target.value)
+                     setPdfType({...pdfType, checked: true})
+                }} />
+                <label htmlFor="normal">Phonepay</label>
+                <input type="radio" name="pdfType" id="" value="secure" onChange={(e) => {
+                    console.log(e.target.value)
+                    setPdfType({...pdfType, checked: true, type: e.target.value})
+                }} />
+                <label htmlFor="secure">Axis Bank</label>
+            </div>
+
+            <div className="flex items-center justify-center gap-2 sm:gap-3 m-5">
+                    <input type="text" name="pdfPassword" id="" placeholder="Enter Password" className="w-1/2 sm:w-1/2 md:w-1/3 lg:w-1/4 outline-2 outline-gray-300 rounded-lg focus:outline-black focus:outline-1" onChange={(e) => setPdfType({...pdfType, password: e.target.value})}/>
+                </div>
 
             {/* Drag/Drop and Browse zone */}
             <div
@@ -115,15 +153,18 @@ const UploadForm = ({ setData }) => {
                 onDragOver={handleDrag}
                 onDrop={handleDrop}
             >
-                <input
+                {pdfType.checked && (<input
                     type="file"
                     onChange={handleFile}
+
                     accept="application/pdf"
                     className={`absolute inset-0 opacity-0 w-full h-full
                         ${status.loading ? "cursor-not-allowed" : "cursor-pointer"}`}
                     disabled={status.loading}
                     ref={fileInputRef}
-                />
+                />)
+
+                }
 
                 {file ? (
                     <div className="flex items-center justify-between bg-gray-100 rounded-lg px-1 sm:px-4 py-3 overflow-hidden">
@@ -151,7 +192,7 @@ const UploadForm = ({ setData }) => {
                 ) : (
                     <div className="text-center">
                         <Upload size={40} className="mx-auto text-gray-400 mb-3" />
-                            <p className="font-medium text-[#7c48dc] text-sm sm:text-base">
+                        <p className="font-medium text-[#7c48dc] text-sm sm:text-base">
                             Drop your PDF here or click to browse
                         </p>
                         <p className="text-xs text-gray-500">Only PDF files are supported</p>

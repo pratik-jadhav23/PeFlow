@@ -19,7 +19,9 @@ app.get('/',(req,res)=>{
     res.send("Yup, it's working")
 })
 
-// app.use('/',rt)
-app.use('/',securePdfRoute)
+app.use('/',rt)
+
+// for secure pdfs
+app.use('/secure',securePdfRoute)
 
 app.listen(port)
