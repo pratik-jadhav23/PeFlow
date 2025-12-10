@@ -9,6 +9,89 @@ const upload = multer();
  * Expects 'file' in form-data and 'password' in body (optional).
  */
 
+const contactWise = (text) => {
+    const contact = []
+    let data = text.split(/(Opening Balance)/)
+    let ind = data.indexOf("Opening Balance") + 1
+    let transactionStartDate = data[ind].trim().split(" ", 3)[1]
+    let currentBalance = parseFloat(data[ind].trim().split(" ", 3)[0])
+
+    data = data[ind]
+    data = data.split(/(Closing Balance)/)
+    let closingBalance = parseFloat(data[data.indexOf("Closing Balance") + 1].trim().split(" ", 3)[0])
+    data = data[0]
+    // const dynamicRegex = new RegExp(`(${transactionStartDate})`);
+
+    let transactions = data.split(/(?=\d{2}-\d{2}-\d{4})/);
+
+    // Clean up the results (trim whitespace)
+    transactions = transactions.map(item => item.trim()).splice(1)
+    // console.log(transactions);
+
+    // Print the result
+    // console.log(transactions);
+    transactions = transactions.map(item => {
+        // console.log(currentBalance,item.split(" ").at(-1))
+        let name, credited, debited
+        let itemBal = parseFloat(item.split(" ").at(-1).split(",").join(""))
+        // console.log(typeof currentBalance,typeof itemBal);
+        if (itemBal > currentBalance) {
+            // console.log("deposited",item);
+            if (item.slice(11).startsWith("UPI/")) {
+                // console.log("name = ",item.slice(11).split("/")[3]);
+                name = item.slice(11).split("/")[3]
+                // console.log("credited = ",parseFloat(item.slice(11).split("/").at(-1).trim().split(" ").at(0).split(",").join("")));
+                credited = parseFloat(item.slice(11).split("/").at(-1).trim().split(" ").at(0).split(",").join(""))
+                if (contact.findIndex(item => item.name === name) !== -1) {
+                    // console.log("found");
+                    contact[contact.findIndex(item => item.name === name)].credited += credited
+                    contact[contact.findIndex(item => item.name === name)].transactionsCount += 1
+
+                }
+                else {
+                    contact.push({ name: name, debited: 0, credited: credited, transactionsCount: 1 })
+                }
+
+            }
+            else {
+                // console.log("name = ",item.slice(11).split("/")[0]);
+                name = item.slice(11).split("/")[0]
+
+                //  console.log("credited = ",parseFloat(item.slice(11).split("/").at(-1).trim().split(" ").at(-2).split(",").join("")));
+                credited = parseFloat(item.slice(11).split("/").at(-1).trim().split(" ").at(-2).split(",").join(""))
+
+            }
+
+            currentBalance = itemBal
+
+        }
+        else {
+            name = item.slice(11).split("/")[3]
+            debited = parseFloat(item.slice(11).split("/").at(-1).trim().split(" ").at(-2).split(",").join(""))
+            // console.log("withdraw", debited);
+            if (contact.findIndex(item => item.name === name) !== -1) {
+                // console.log("found");
+                contact[contact.findIndex(item => item.name === name)].debited += debited
+                contact[contact.findIndex(item => item.name === name)].transactionsCount += 1
+
+            }
+            else {
+                contact.push({ name: name, debited: debited, credited: 0, transactionsCount: 1 })
+            }
+            currentBalance = itemBal
+        }
+
+    })
+    console.log(contact);
+    return { contact, ["transactions"]: transactions.length }
+
+    // console.log(data);
+    // largeData = {data}
+    // console.dir(largeData,{depth: null, maxArrayLength: null});
+
+
+}
+
 const getTransactionPeriod = (text) => {
     let dateMatch = text.match(/(\d{2}\/\d{2}\/\d{4})\s+to\s+(\d{2}\/\d{2}\/\d{4})/);
 
@@ -224,90 +307,90 @@ function parseBankTransactions(text) {
     return result;
 }
 
-function groupingByContacts(text) {
-  // 1. Extract Opening Balance
-  // We need this to determine if subsequent transactions are Credits or Debits
-  const openingBalanceMatch = text.match(/Opening Balance\s+([\d,]+\.\d{2})/);
-  let currentBalance = openingBalanceMatch ? parseFloat(openingBalanceMatch[1].replace(/,/g, '')) : 0.00;
+// function groupingByContacts(text) {
+//     // 1. Extract Opening Balance
+//     // We need this to determine if subsequent transactions are Credits or Debits
+//     const openingBalanceMatch = text.match(/Opening Balance\s+([\d,]+\.\d{2})/);
+//     let currentBalance = openingBalanceMatch ? parseFloat(openingBalanceMatch[1].replace(/,/g, '')) : 0.00;
 
-  // 2. Split text into lines and initialize storage
-  const lines = text.split('\n');
-  const groupedData = {};
+//     // 2. Split text into lines and initialize storage
+//     const lines = text.split('\n');
+//     const groupedData = {};
 
-  // Regex to identify transaction lines: 
-  // Starts with Date (DD-MM-YYYY) -> Description -> Amount -> Balance
-  const txnRegex = /^(\d{2}-\d{2}-\d{4})\s+(.+?)\s+([\d,]+\.\d{2})\s+([\d,]+\.\d{2})$/;
+//     // Regex to identify transaction lines: 
+//     // Starts with Date (DD-MM-YYYY) -> Description -> Amount -> Balance
+//     const txnRegex = /^(\d{2}-\d{2}-\d{4})\s+(.+?)\s+([\d,]+\.\d{2})\s+([\d,]+\.\d{2})$/;
 
-  lines.forEach(line => {
-    const match = line.trim().match(txnRegex);
-    if (!match) return;
+//     lines.forEach(line => {
+//         const match = line.trim().match(txnRegex);
+//         if (!match) return;
 
-    // 3. Extract Raw Data
-    const rawDescription = match[2];
-    const amount = parseFloat(match[3].replace(/,/g, ''));
-    const lineBalance = parseFloat(match[4].replace(/,/g, ''));
+//         // 3. Extract Raw Data
+//         const rawDescription = match[2];
+//         const amount = parseFloat(match[3].replace(/,/g, ''));
+//         const lineBalance = parseFloat(match[4].replace(/,/g, ''));
 
-    // 4. Determine Transaction Type (Credit vs Debit) using Math
-    // If (CurrentBalance + Amount = NewBalance) -> Credit
-    // If (CurrentBalance - Amount = NewBalance) -> Debit
-    let type = 'unknown';
-    if (Math.abs((currentBalance + amount) - lineBalance) < 0.1) {
-      type = 'credit';
-    } else if (Math.abs((currentBalance - amount) - lineBalance) < 0.1) {
-      type = 'debit';
-    }
+//         // 4. Determine Transaction Type (Credit vs Debit) using Math
+//         // If (CurrentBalance + Amount = NewBalance) -> Credit
+//         // If (CurrentBalance - Amount = NewBalance) -> Debit
+//         let type = 'unknown';
+//         if (Math.abs((currentBalance + amount) - lineBalance) < 0.1) {
+//             type = 'credit';
+//         } else if (Math.abs((currentBalance - amount) - lineBalance) < 0.1) {
+//             type = 'debit';
+//         }
 
-    // Update running balance for the next iteration
-    currentBalance = lineBalance;
+//         // Update running balance for the next iteration
+//         currentBalance = lineBalance;
 
-    // 5. Clean the Name
-    let name = rawDescription;
+//         // 5. Clean the Name
+//         let name = rawDescription;
 
-    if (rawDescription.includes('UPI/')) {
-      // Logic for UPI: UPI/P2M/ID/NAME/... -> Take the 4th part (index 3)
-      const parts = rawDescription.split('/');
-      if (parts.length >= 4) {
-        name = parts[3];
-      }
-    } else {
-      // Logic for Others (Salary, NEFT, etc.): Take part before first '/'
-      // Example: "VECTOR INDIA PR/Salary" -> "VECTOR INDIA PR"
-      name = rawDescription.split('/')[0];
-      
-      // Specific cleanup for "VECTOR INDIA PR" -> "VECTOR INDIA"
-      // Removes trailing " PR" if it exists, as per your request
-      name = name.replace(/\sPR$/, '');
-    }
+//         if (rawDescription.includes('UPI/')) {
+//             // Logic for UPI: UPI/P2M/ID/NAME/... -> Take the 4th part (index 3)
+//             const parts = rawDescription.split('/');
+//             if (parts.length >= 4) {
+//                 name = parts[3];
+//             }
+//         } else {
+//             // Logic for Others (Salary, NEFT, etc.): Take part before first '/'
+//             // Example: "VECTOR INDIA PR/Salary" -> "VECTOR INDIA PR"
+//             name = rawDescription.split('/')[0];
 
-    // Final trim to remove extra spaces
-    name = name.trim();
+//             // Specific cleanup for "VECTOR INDIA PR" -> "VECTOR INDIA"
+//             // Removes trailing " PR" if it exists, as per your request
+//             name = name.replace(/\sPR$/, '');
+//         }
 
-    // 6. Aggregate Data
-    if (!groupedData[name]) {
-      groupedData[name] = {
-        name: name,
-        credited: 0,
-        debited: 0,
-        transactionCount: 0
-      };
-    }
+//         // Final trim to remove extra spaces
+//         name = name.trim();
 
-    if (type === 'credit') {
-      groupedData[name].credited += amount;
-    } else if (type === 'debit') {
-      groupedData[name].debited += amount;
-    }
-    groupedData[name].transactionCount++;
-  });
+//         // 6. Aggregate Data
+//         if (!groupedData[name]) {
+//             groupedData[name] = {
+//                 name: name,
+//                 credited: 0,
+//                 debited: 0,
+//                 transactionCount: 0
+//             };
+//         }
 
-  // 7. Return as Array and format numbers
-  return Object.values(groupedData).map(item => ({
-    name: item.name,
-    credited: parseFloat(item.credited.toFixed(2)),
-    debited: parseFloat(item.debited.toFixed(2)),
-    transactionCount: item.transactionCount
-  }));
-}
+//         if (type === 'credit') {
+//             groupedData[name].credited += amount;
+//         } else if (type === 'debit') {
+//             groupedData[name].debited += amount;
+//         }
+//         groupedData[name].transactionCount++;
+//     });
+
+//     // 7. Return as Array and format numbers
+//     return Object.values(groupedData).map(item => ({
+//         name: item.name,
+//         credited: parseFloat(item.credited.toFixed(2)),
+//         debited: parseFloat(item.debited.toFixed(2)),
+//         transactionCount: item.transactionCount
+//     }));
+// }
 
 // --- Example Usage ---
 // Assuming 'statementText' is your long string variable
@@ -343,20 +426,24 @@ const parseSecurePdf = async (req, res) => {
         // const {groupings} = parseBankStatement(text);
         // console.log(groupings);
 
-        const groupings = groupingByContacts(text);
-        console.log(groupings);
+        // const groupings = groupingByContacts(text);
+        // console.log(groupings);
 
         res.status(200).json({
             success: true,
             numpages: data.numpages,
-            groupings: groupings,
+            groupings: {
+                contact: contactWise(text).contact
+            },
             stats: {
                 transactionPeriod: `${formattedStart} - ${formattedEnd}`,
                 totalDays: totalDays,
                 totalAmountSpent: totalSpent,
                 totalAmountRecieved: totalReceived,
-                netAmount: netAmount
+                netAmount: netAmount,
+                totalTransactions: contactWise(text).transactions
             },
+            transactions: contactWise(text).transactions,
             text_preview: data.text.substring(0, 200) + "...", // Preview of extracted text
             text: data.text,
             full_text_length: data.text.length,

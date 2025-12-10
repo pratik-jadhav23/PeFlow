@@ -16,7 +16,7 @@ app.use(cors({
 }));
 
 app.get('/',(req,res)=>{
-    res.send("Yup, it's working")
+    res.send("Yup, it's working") 
 })
 
 app.use('/',rt)

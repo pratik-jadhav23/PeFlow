@@ -10,11 +10,11 @@ const Insights = ({ data }) => {
 
   let navigate = useNavigate();
 
-  useEffect(()=>{
+  useEffect(() => {
     if (!data) {
       navigate('/');
     }
-  },[data, navigate])
+  }, [data, navigate])
 
   // let top5CD = (data, key) => {
   //     return (
@@ -56,7 +56,7 @@ const Insights = ({ data }) => {
             <Upload className="w-5 h-5" />
           </Link>
         </div>
-        <Stats data={data?.stats}/>
+        <Stats data={data?.stats} />
 
 
         {/* monthly cash in and out */}
@@ -92,14 +92,14 @@ const Insights = ({ data }) => {
         </div> */}
 
         {/* contact-wise cash in and out */}
-        {/* <div className='my-5 sm:my-6 md:my-8 lg:my-10 xl:my-14'>
+        <div className='my-5 sm:my-6 md:my-8 lg:my-10 xl:my-14'>
           <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">
             Contact-wise Cash In & Out
           </h1>
           <div className='mt-3 sm:mt-8 h-68 sm:h-80 lg:h-96'>
             <ContactChart data={data?.groupings?.contact} />
           </div>
-        </div> */}
+        </div>
       </>}
     </>
   )
