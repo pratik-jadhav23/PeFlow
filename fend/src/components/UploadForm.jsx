@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import axios from "axios";
-import { Upload, FileText, X, Info } from "lucide-react";
+import { Upload, FileText, X, Info, Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
@@ -18,6 +18,7 @@ const UploadForm = ({ setData }) => {
         password: "",
         checked: false
     });
+    const [showPassword, setShowPassword] = useState(false);
 
     // Drag events
     const handleDrag = (e) => {
@@ -85,11 +86,11 @@ const UploadForm = ({ setData }) => {
             console.log(pdfType);
             let res;
 
-            if(pdfType.type === "normal") {
+            if (pdfType.type === "normal") {
                 //for normal pdfs
                 res = await axios.post(`${import.meta.env.VITE_API_URL}/parse`, formData);
                 // res = await axios.post(`http://localhost:5000/parse`, formData);
-                
+
             }
             else {
                 //for secure pdfs
@@ -125,80 +126,92 @@ const UploadForm = ({ setData }) => {
                 Upload your Transactions PDF
             </h2>
             <h3 className="text-sm sm:text-md md:text-lg font-semibold text-gray-800 mb-5 text-center">select pdf type</h3>
-            <div className="flex items-center gap-2 sm:gap-3">
-                <input type="radio" name="pdfType" id="" value="normal" onChange={(e) =>{
+            <div className="flex items-center gap-2 sm:gap-3 pb-2">
+                <input type="radio" name="pdfType" id="" value="normal" onChange={(e) => {
                     console.log(e.target.value)
-                     setPdfType({...pdfType, checked: true})
+                    setPdfType({ ...pdfType, checked: true, type: e.target.value })
                 }} />
                 <label htmlFor="normal">Phonepay</label>
                 <input type="radio" name="pdfType" id="" value="secure" onChange={(e) => {
                     console.log(e.target.value)
-                    setPdfType({...pdfType, checked: true, type: e.target.value})
+                    setPdfType({ ...pdfType, checked: true, type: e.target.value })
                 }} />
                 <label htmlFor="secure">Axis Bank</label>
             </div>
 
-            <div className="flex items-center justify-center gap-2 sm:gap-3 m-5">
-                    <input type="text" name="pdfPassword" id="" placeholder="Enter Password" className="w-1/2 sm:w-1/2 md:w-1/3 lg:w-1/4 outline-2 outline-gray-300 rounded-lg focus:outline-black focus:outline-1" onChange={(e) => setPdfType({...pdfType, password: e.target.value})}/>
-                </div>
-
+            {pdfType.type === "secure" && <div className="flex items-center justify-center sm:gap-3 mb-4 sm:plr-8 relative max-w-xs mx-auto">
+                <input
+                    type={showPassword ? "text" : "password"}
+                    name="pdfPassword"
+                    id=""
+                    placeholder="Enter Password"
+                    className="w-full pl-3 pr-10 py-2 border outline-2 outline-gray-300 rounded-lg focus:outline-black focus:outline-2"
+                    onChange={(e) => setPdfType({ ...pdfType, password: e.target.value })}
+                />
+                <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 cursor-pointer"
+                >
+                    {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+                </button>
+            </div>}
             {/* Drag/Drop and Browse zone */}
-            <div
-                className={`relative border-2 border-dashed rounded-xl p-3 sm:p-8 mb-6 transition
+            {
+                pdfType.checked && <div
+                    className={`relative border-2 border-dashed rounded-xl p-3 sm:p-8 mb-6 transition
           ${dragActive ? "bg-blue-50 border-blue-400" : "bg-gray-50 border-gray-200"}
           ${!file && "hover:bg-gray-100 hover:border-gray-400"}
           ${status.loading ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
-                onDragEnter={handleDrag}
-                onDragLeave={handleDrag}
-                onDragOver={handleDrag}
-                onDrop={handleDrop}
-            >
-                {pdfType.checked && (<input
-                    type="file"
-                    onChange={handleFile}
+                    onDragEnter={handleDrag}
+                    onDragLeave={handleDrag}
+                    onDragOver={handleDrag}
+                    onDrop={handleDrop}
+                >
+                    <input
+                        type="file"
+                        onChange={handleFile}
 
-                    accept="application/pdf"
-                    className={`absolute inset-0 opacity-0 w-full h-full
+                        accept="application/pdf"
+                        className={`absolute inset-0 opacity-0 w-full h-full
                         ${status.loading ? "cursor-not-allowed" : "cursor-pointer"}`}
-                    disabled={status.loading}
-                    ref={fileInputRef}
-                />)
-
-                }
-
-                {file ? (
-                    <div className="flex items-center justify-between bg-gray-100 rounded-lg px-1 sm:px-4 py-3 overflow-hidden">
-                        <div className="flex items-center gap-2 sm:gap-3">
-                            <FileText className="text-purple-700 w-5 h-5 sm:w-7 sm:h-7 lg:w-8 lg:h-8" size={28} />
-                            <div>
-                                <p className="font-medium text-gray-800 text-sm sm:text-base truncate max-w-[200px] sm:max-w-[280px]">
-                                    {file.name}
-                                </p>
-                                <p className="text-xs sm:text-sm text-gray-500">
-                                    {(file.size / 1024 / 1024).toFixed(2)} MB
-                                </p>
+                        disabled={status.loading}
+                        ref={fileInputRef}
+                    />
+                    {file ? (
+                        <div className="flex items-center justify-between bg-gray-100 rounded-lg px-1 sm:px-4 py-3 overflow-hidden">
+                            <div className="flex items-center gap-2 sm:gap-3">
+                                <FileText className="text-purple-700 w-5 h-5 sm:w-7 sm:h-7 lg:w-8 lg:h-8" size={28} />
+                                <div>
+                                    <p className="font-medium text-gray-800 text-sm sm:text-base truncate max-w-[200px] sm:max-w-[280px]">
+                                        {file.name}
+                                    </p>
+                                    <p className="text-xs sm:text-sm text-gray-500">
+                                        {(file.size / 1024 / 1024).toFixed(2)} MB
+                                    </p>
+                                </div>
                             </div>
-                        </div>
-                        <button
-                            type="button"
-                            className={`text-red-500 hover:text-red-600 z-10
+                            <button
+                                type="button"
+                                className={`text-red-500 hover:text-red-600 z-10
                                     ${status.loading ? "cursor-not-allowed" : "cursor-pointer"}`}
-                            onClick={removeFile}
-                            disabled={status.loading}
-                        >
-                            <X size={20} />
-                        </button>
-                    </div>
-                ) : (
-                    <div className="text-center">
-                        <Upload size={40} className="mx-auto text-gray-400 mb-3" />
-                        <p className="font-medium text-[#7c48dc] text-sm sm:text-base">
-                            Drop your PDF here or click to browse
-                        </p>
-                        <p className="text-xs text-gray-500">Only PDF files are supported</p>
-                    </div>
-                )}
-            </div>
+                                onClick={removeFile}
+                                disabled={status.loading}
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="text-center">
+                            <Upload size={40} className="mx-auto text-gray-400 mb-3" />
+                            <p className="font-medium text-[#7c48dc] text-sm sm:text-base">
+                                Drop your PDF here or click to browse
+                            </p>
+                            <p className="text-xs text-gray-500">Only PDF files are supported</p>
+                        </div>
+                    )}
+                </div>
+            }
 
             {file && (
                 <button
