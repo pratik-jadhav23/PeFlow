@@ -353,8 +353,8 @@ const parseSecurePdf = async (req, res) => {
             stats: {
                 transactionPeriod: `${formattedStart} - ${formattedEnd}`,
                 totalDays: totalDays,
-                totalSpent: totalSpent,
-                totalReceived: totalReceived,
+                totalAmountSpent: totalSpent,
+                totalAmountRecieved: totalReceived,
                 netAmount: netAmount
             },
             text_preview: data.text.substring(0, 200) + "...", // Preview of extracted text
