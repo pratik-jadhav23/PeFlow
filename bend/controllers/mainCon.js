@@ -151,6 +151,7 @@ let parse = async (req, res) => {
 
         res.status(200).json({
             success: true,
+            pdfType:"normal",
             transactions,
             stats: {
                 transactionPeriod:`${transactions.at(-1).date} - ${transactions.at(0).date}`,
