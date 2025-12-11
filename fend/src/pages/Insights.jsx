@@ -61,15 +61,14 @@ const Insights = ({ data }) => {
 
         {/* monthly cash in and out */}
 
-        {data?.pdfType === "normal" && <div className='my-5 sm:my-6 md:my-8 lg:my-10 xl:my-14'>
+        <div className='my-5 sm:my-6 md:my-8 lg:my-10 xl:my-14'>
           <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">
             Monthly Cash In & Out
           </h1>
           <div className='my-5 sm:mt-8 h-68 sm:h-80 lg:h-96'>
             <MonthlyCharts data={data?.groupings?.month} />
           </div>
-        </div>}
-
+        </div>
 
 
         {/* //top contacts by spend and receive */}

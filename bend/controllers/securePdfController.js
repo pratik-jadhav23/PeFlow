@@ -1,3 +1,4 @@
+const { text } = require('express');
 const { parsePasswordPdf } = require('../utils/passwordPdf');
 const multer = require('multer');
 
@@ -8,6 +9,10 @@ const upload = multer();
  * Controller to handle password-protected PDF parsing.
  * Expects 'file' in form-data and 'password' in body (optional).
  */
+
+const monthWise = (text)=>{
+
+}
 
 const contactWise = (text) => {
     const contact = []
@@ -199,6 +204,8 @@ const parseSecurePdf = async (req, res) => {
 
         const { formattedStart, formattedEnd, totalDays } = getTransactionPeriod(text);
         const { totalSpent, totalReceived, netAmount } = parseBankStatement(text);
+        // console.log(formattedStart.split(" "), totalReceived, totalSpent);
+        
         // const {groupings} = parseBankStatement(text);
         // console.log(groupings);
 
@@ -209,6 +216,12 @@ const parseSecurePdf = async (req, res) => {
             success: true,
             pdfType:"secure",
             groupings: {
+                month:[{
+                    month:formattedStart.split(" ")[0]+" "+formattedStart.split(" ").at(-1),
+                    credited:totalReceived,
+                    debited:totalSpent
+
+                }],
                 contact: contactWise(text).contact
             },
             stats: {
