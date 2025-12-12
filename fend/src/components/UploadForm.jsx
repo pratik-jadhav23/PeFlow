@@ -82,7 +82,7 @@ const UploadForm = ({ setData }) => {
             const formData = new FormData();
             formData.append("file", file);
             pdfType.password && formData.append("pdfPassword", pdfType.password);
-            // pdfType.type ==="secure" && formData.append("bankType", "secure");
+            pdfType.type === "secure" && formData.append("bankType", pdfType.bankType);
 
             console.log(formData);
             console.log(pdfType);
@@ -131,20 +131,20 @@ const UploadForm = ({ setData }) => {
             <div className="flex items-center gap-2 sm:gap-3 pb-2">
                 <input type="radio" name="pdfType" id="phonepay" value="normal" onChange={(e) => {
                     // console.log(e.target.value)
-                    setPdfType({ ...pdfType, checked: true, type: e.target.value, bankTpye:"NORMAL" })
+                    setPdfType({ ...pdfType, checked: true, type: e.target.value, bankType: "NORMAL" })
                 }} />
                 <label htmlFor="phonepay">Phonepay</label>
-                <input type="radio" name="pdfType" id="AXIS" value="secure"  onChange={(e) => {
+                <input type="radio" name="pdfType" id="AXIS" value="secure" onChange={(e) => {
                     // console.log(e.target.value)
-                    setPdfType({ ...pdfType, checked: true, type: e.target.value, bankTpye:"AXIS" })
+                    setPdfType({ ...pdfType, checked: true, type: e.target.value, bankType: "AXIS" })
                 }} />
                 <label htmlFor="AXIS">Axis Bank</label>
-                 <input type="radio" name="pdfType" id="SBI" value="secure" onChange={(e) => {
+                <input type="radio" name="pdfType" id="SBI" value="secure" onChange={(e) => {
                     // console.log(e.target.value)
-                    setPdfType({ ...pdfType, checked: true, type: e.target.value, bankTpye:"SBI" })
+                    setPdfType({ ...pdfType, checked: true, type: e.target.value, bankType: "SBI" })
                 }} />
                 <label htmlFor="SBI">SBI</label>
-               
+
             </div>
 
             {pdfType.type === "secure" && <div className="flex items-center justify-center sm:gap-3 mb-4 sm:plr-8 relative max-w-xs mx-auto">

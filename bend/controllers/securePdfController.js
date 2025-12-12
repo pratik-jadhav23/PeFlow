@@ -27,28 +27,31 @@ const contactWise = (text) => {
     data = data[0]
     // const dynamicRegex = new RegExp(`(${transactionStartDate})`);
 
+    console.log("final data = ", data);
+
+
     let transactions = data.split(/(?=\d{2}-\d{2}-\d{4})/);
 
     // Clean up the results (trim whitespace)
     transactions = transactions.map(item => item.trim()).splice(1)
-    // console.log(transactions);
+
 
     // Print the result
-    // console.log(transactions);
+
     transactions = transactions.map(item => {
-        // console.log(currentBalance,item.split(" ").at(-1))
+
         let name, credited, debited
         let itemBal = parseFloat(item.split(" ").at(-1).split(",").join(""))
-        // console.log(typeof currentBalance,typeof itemBal);
+
         if (itemBal > currentBalance) {
-            // console.log("deposited",item);
+
             if (item.slice(11).startsWith("UPI/")) {
-                // console.log("name = ",item.slice(11).split("/")[3]);
+
                 name = item.slice(11).split("/")[3]
-                // console.log("credited = ",parseFloat(item.slice(11).split("/").at(-1).trim().split(" ").at(0).split(",").join("")));
+
                 credited = parseFloat(item.slice(11).split("/").at(-1).trim().split(" ").at(0).split(",").join(""))
                 if (contact.findIndex(item => item.name === name) !== -1) {
-                    // console.log("found");
+
                     contact[contact.findIndex(item => item.name === name)].credited += credited
                     contact[contact.findIndex(item => item.name === name)].transactionsCount += 1
 
@@ -59,10 +62,10 @@ const contactWise = (text) => {
 
             }
             else {
-                // console.log("name = ",item.slice(11).split("/")[0]);
+
                 name = item.slice(11).split("/")[0]
 
-                //  console.log("credited = ",parseFloat(item.slice(11).split("/").at(-1).trim().split(" ").at(-2).split(",").join("")));
+
                 credited = parseFloat(item.slice(11).split("/").at(-1).trim().split(" ").at(-2).split(",").join(""))
 
             }
@@ -73,9 +76,9 @@ const contactWise = (text) => {
         else {
             name = item.slice(11).split("/")[3]
             debited = parseFloat(item.slice(11).split("/").at(-1).trim().split(" ").at(-2).split(",").join(""))
-            // console.log("withdraw", debited);
+
             if (contact.findIndex(item => item.name === name) !== -1) {
-                // console.log("found");
+
                 contact[contact.findIndex(item => item.name === name)].debited += debited
                 contact[contact.findIndex(item => item.name === name)].transactionsCount += 1
 
@@ -87,10 +90,10 @@ const contactWise = (text) => {
         }
 
     })
-    // console.log(contact);
+
     return { contact, ["transactions"]: transactions.length }
 
-    // console.log(data);
+
     // largeData = {data}
     // console.dir(largeData,{depth: null, maxArrayLength: null});
 
@@ -110,21 +113,21 @@ const getTransactionPeriod = (text) => {
 
         // 2. Format the output as "Sep 12, 2025 - Dec 12, 2025"
         let options = { year: 'numeric', month: 'short', day: '2-digit' };
-        // console.log("no err");
+
 
         let formattedStart = startDate.toLocaleDateString('en-US', options);
         let formattedEnd = endDate.toLocaleDateString('en-US', options);
 
 
 
-        // console.log(`${formattedStart} - ${formattedEnd}`);
+
 
         // 3. Count total days (Inclusive)
         // Calculate difference in milliseconds, convert to days, add 1 for inclusive count
         let timeDiff = endDate.getTime() - startDate.getTime();
         let totalDays = (timeDiff / (1000 * 3600 * 24)) + 1;
 
-        // console.log("Total Days: " + Math.round(totalDays));
+
         return { formattedStart, formattedEnd, totalDays };
     }
 }
@@ -138,7 +141,7 @@ function parseBankStatement(statementText) {
     const openingBalanceMatch = statementText.match(/Opening Balance\s+([\d,]+\.\d{2})/);
     let currentBalance = openingBalanceMatch ? parseFloat(openingBalanceMatch[1].replace(/,/g, '')) : 0.0;
 
-    // console.log("Opening Balance:", currentBalance);
+
 
     // 2. Extract Transactions
     // Regex breakdown:
@@ -190,20 +193,21 @@ const parseSecurePdf = async (req, res) => {
         // Get password from request body (if provided)
         console.log(req.body);
         const password = req.body.pdfPassword || "";
+        const bankType = req.body.bankType || "AXIS";
         // const smartSort = true;
-        // console.log(password);
 
 
-        // console.log(`Processing PDF. Password provided: ${password ? 'Yes' : 'No'}`);
 
-        const data = await parsePasswordPdf(req.file.buffer, password, req.body.bankType);
+
+
+        const data = await parsePasswordPdf(req.file.buffer, password, bankType);
 
         // Here you can add your transaction parsing logic similar to mainCon.js
         // For now, we return the raw text to confirm it opened.
 
         const text = data.text
 
-        if (req.body.bankType === 'AXIS') {
+        if (bankType === 'AXIS') {
             const { formattedStart, formattedEnd, totalDays } = getTransactionPeriod(text);
             const { totalSpent, totalReceived, netAmount } = parseBankStatement(text);
 
@@ -251,13 +255,13 @@ const parseSecurePdf = async (req, res) => {
 
         // const { formattedStart, formattedEnd, totalDays } = getTransactionPeriod(text);
         // const { totalSpent, totalReceived, netAmount } = parseBankStatement(text);
-        // console.log(formattedStart.split(" "), totalReceived, totalSpent);
+
 
         // const {groupings} = parseBankStatement(text);
-        // console.log(groupings);
+
 
         // const groupings = groupingByContacts(text);
-        // console.log(groupings);
+
 
 
 

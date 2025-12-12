@@ -147,14 +147,14 @@ let parse = async (req, res) => {
 
         const type = groupAmount(transactions)
 
-        console.log(transactions)
+        // console.log(transactions)
 
         res.status(200).json({
             success: true,
-            pdfType:"normal",
+            pdfType: "normal",
             transactions,
             stats: {
-                transactionPeriod:`${transactions.at(-1).date} - ${transactions.at(0).date}`,
+                transactionPeriod: `${transactions.at(-1).date} - ${transactions.at(0).date}`,
                 totalTransactions: transactions.length,
                 totalAmountSpent: type.debit,
                 totalAmountRecieved: type.credit,
