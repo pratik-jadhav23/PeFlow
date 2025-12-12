@@ -16,7 +16,8 @@ const UploadForm = ({ setData }) => {
     const [pdfType, setPdfType] = useState({
         type: "normal",
         password: "",
-        checked: false
+        checked: false,
+        bankType: ""
     });
     const [showPassword, setShowPassword] = useState(false);
 
@@ -81,6 +82,7 @@ const UploadForm = ({ setData }) => {
             const formData = new FormData();
             formData.append("file", file);
             pdfType.password && formData.append("pdfPassword", pdfType.password);
+            // pdfType.type ==="secure" && formData.append("bankType", "secure");
 
             console.log(formData);
             console.log(pdfType);
@@ -127,16 +129,22 @@ const UploadForm = ({ setData }) => {
             </h2>
             <h3 className="text-sm sm:text-md md:text-lg font-semibold text-gray-800 mb-5 text-center">select pdf type</h3>
             <div className="flex items-center gap-2 sm:gap-3 pb-2">
-                <input type="radio" name="pdfType" id="" value="normal" onChange={(e) => {
-                    console.log(e.target.value)
-                    setPdfType({ ...pdfType, checked: true, type: e.target.value })
+                <input type="radio" name="pdfType" id="phonepay" value="normal" onChange={(e) => {
+                    // console.log(e.target.value)
+                    setPdfType({ ...pdfType, checked: true, type: e.target.value, bankTpye:"NORMAL" })
                 }} />
-                <label htmlFor="normal">Phonepay</label>
-                <input type="radio" name="pdfType" id="" value="secure" onChange={(e) => {
-                    console.log(e.target.value)
-                    setPdfType({ ...pdfType, checked: true, type: e.target.value })
+                <label htmlFor="phonepay">Phonepay</label>
+                <input type="radio" name="pdfType" id="AXIS" value="secure"  onChange={(e) => {
+                    // console.log(e.target.value)
+                    setPdfType({ ...pdfType, checked: true, type: e.target.value, bankTpye:"AXIS" })
                 }} />
-                <label htmlFor="secure">Axis Bank</label>
+                <label htmlFor="AXIS">Axis Bank</label>
+                 <input type="radio" name="pdfType" id="SBI" value="secure" onChange={(e) => {
+                    // console.log(e.target.value)
+                    setPdfType({ ...pdfType, checked: true, type: e.target.value, bankTpye:"SBI" })
+                }} />
+                <label htmlFor="SBI">SBI</label>
+               
             </div>
 
             {pdfType.type === "secure" && <div className="flex items-center justify-center sm:gap-3 mb-4 sm:plr-8 relative max-w-xs mx-auto">
@@ -145,7 +153,7 @@ const UploadForm = ({ setData }) => {
                     name="pdfPassword"
                     id=""
                     placeholder="Enter Password"
-                    className="w-full pl-3 pr-10 py-2 border outline-2 outline-gray-300 rounded-lg focus:outline-black focus:outline-2"
+                    className="w-full pl-3 pr-6 py-2 border outline-2 outline-gray-300 rounded-lg focus:outline-black focus:outline-2"
                     onChange={(e) => setPdfType({ ...pdfType, password: e.target.value })}
                 />
                 <button

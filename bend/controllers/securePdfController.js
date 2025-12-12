@@ -10,7 +10,7 @@ const upload = multer();
  * Expects 'file' in form-data and 'password' in body (optional).
  */
 
-const monthWise = (text)=>{
+const monthWise = (text) => {
 
 }
 
@@ -188,56 +188,79 @@ const parseSecurePdf = async (req, res) => {
         }
 
         // Get password from request body (if provided)
-        // console.log(req.body);
+        console.log(req.body);
         const password = req.body.pdfPassword || "";
+        // const smartSort = true;
         // console.log(password);
 
 
         // console.log(`Processing PDF. Password provided: ${password ? 'Yes' : 'No'}`);
 
-        const data = await parsePasswordPdf(req.file.buffer, password);
+        const data = await parsePasswordPdf(req.file.buffer, password, req.body.bankType);
 
         // Here you can add your transaction parsing logic similar to mainCon.js
         // For now, we return the raw text to confirm it opened.
 
         const text = data.text
 
-        const { formattedStart, formattedEnd, totalDays } = getTransactionPeriod(text);
-        const { totalSpent, totalReceived, netAmount } = parseBankStatement(text);
+        if (req.body.bankType === 'AXIS') {
+            const { formattedStart, formattedEnd, totalDays } = getTransactionPeriod(text);
+            const { totalSpent, totalReceived, netAmount } = parseBankStatement(text);
+
+            res.status(200).json({
+                success: true,
+                pdfType: "secure",
+                bankType: req.body.bankType,
+                groupings: {
+                    month: [{
+                        month: formattedStart.split(" ")[0] + " " + formattedStart.split(" ").at(-1),
+                        credited: totalReceived,
+                        debited: totalSpent
+
+                    }],
+                    contact: contactWise(text).contact
+                },
+                stats: {
+                    transactionPeriod: `${formattedStart} - ${formattedEnd}`,
+                    totalDays: totalDays,
+                    totalAmountSpent: totalSpent,
+                    totalAmountRecieved: totalReceived,
+                    netAmount: netAmount,
+                    totalTransactions: contactWise(text).transactions
+                },
+                numpages: data.numpages,
+                text_preview: data.text.substring(0, 200) + "...", // Preview of extracted text
+                full_text_length: data.text.length,
+                text: data.text,
+                // transactions: parseTransactions(data.text) // Call your parser here
+            })
+        }
+        else {
+            res.status(200).json({
+                success: true,
+                pdfType: "secure",
+                bankType: req.body.bankType,
+                numpages: data.numpages,
+                text_preview: data.text.substring(0, 200) + "...", // Preview of extracted text
+                full_text_length: data.text.length,
+                text: data.text,
+                // transactions: parseTransactions(data.text) // Call your parser here
+            })
+
+        }
+
+        // const { formattedStart, formattedEnd, totalDays } = getTransactionPeriod(text);
+        // const { totalSpent, totalReceived, netAmount } = parseBankStatement(text);
         // console.log(formattedStart.split(" "), totalReceived, totalSpent);
-        
+
         // const {groupings} = parseBankStatement(text);
         // console.log(groupings);
 
         // const groupings = groupingByContacts(text);
         // console.log(groupings);
 
-        res.status(200).json({
-            success: true,
-            pdfType:"secure",
-            groupings: {
-                month:[{
-                    month:formattedStart.split(" ")[0]+" "+formattedStart.split(" ").at(-1),
-                    credited:totalReceived,
-                    debited:totalSpent
 
-                }],
-                contact: contactWise(text).contact
-            },
-            stats: {
-                transactionPeriod: `${formattedStart} - ${formattedEnd}`,
-                totalDays: totalDays,
-                totalAmountSpent: totalSpent,
-                totalAmountRecieved: totalReceived,
-                netAmount: netAmount,
-                totalTransactions: contactWise(text).transactions
-            },
-            numpages: data.numpages,
-            text_preview: data.text.substring(0, 200) + "...", // Preview of extracted text
-            full_text_length: data.text.length,
-            text: data.text,
-            // transactions: parseTransactions(data.text) // Call your parser here
-        });
+
 
     } catch (err) {
         console.error('Error parsing PDF:', err.message);
