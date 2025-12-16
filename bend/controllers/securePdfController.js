@@ -14,31 +14,61 @@ const monthWise = (text) => {
 
 }
 
-const contactWise = (text) => {
+const contactWise = (text, bankType) => {
     const contact = []
+    let transactions
+    let currentBalance
     let data = text.split(/(Opening Balance)/)
     let ind = data.indexOf("Opening Balance") + 1
-    let transactionStartDate = data[ind].trim().split(" ", 3)[1]
-    let currentBalance = parseFloat(data[ind].trim().split(" ", 3)[0])
-
-    data = data[ind]
-    data = data.split(/(Closing Balance)/)
-    let closingBalance = parseFloat(data[data.indexOf("Closing Balance") + 1].trim().split(" ", 3)[0])
-    data = data[0]
+    // let transactionStartDate = data[ind].trim().split(" ", 3)[1]
+    // currentBalance = parseFloat(data[ind].trim().split(" ", 3)[0])
+    // data = data[ind].split(/(Closing Balance)/)[0]
+    // let closingBalance = parseFloat(data[data.indexOf("Closing Balance") + 1].trim().split(" ", 3)[0])
+    // data = data[0]
     // const dynamicRegex = new RegExp(`(${transactionStartDate})`);
+    // console.log("bankType = ", bankType);
+
+    if (bankType === "AXIS") {
+        // console.log("in AXIS");
+        currentBalance = parseFloat(data[ind].trim().split(" ", 3)[0])
+        data = data[ind].split(/(Closing Balance)/)[0]
+        transactions = data.split(/(?=\d{2}-\d{2}-\d{4})/);
+        transactions = transactions.map(item => item.trim()).splice(1)
+
+        // console.log("transactions AXIS = ", transactions, "transactions length AXIS = ", transactions.length);
+    }
+    else if (bankType === "SBI") {
+        // console.log("data = ", data, "ind = ", ind)
+        data = data[ind].split(/(Your Closing Balance)/)[0]
+        transactions = data.split(/(?=\d{2}-\d{2}-\d{2})/);
+        currentBalance = parseFloat(transactions[1].trim().split(" ")[3])
+        transactions = transactions.map(item => item.trim()).splice(2)
+        // console.log("transactions SBI = ", transactions, "transactions length SBI = ", transactions.length);
+    }
 
     console.log("final data = ", data);
+    console.log("currentBalance = ", currentBalance);
+    console.log("transactions = ", transactions);
+    console.log("transactions.length = ", transactions.length);
 
 
-    let transactions = data.split(/(?=\d{2}-\d{2}-\d{4})/);
+
+
+
+    // transactions = data.split(/(?=\d{2}-\d{2}-\d{4})/);
 
     // Clean up the results (trim whitespace)
-    transactions = transactions.map(item => item.trim()).splice(1)
+    // transactions = transactions.map(item => item.trim()).splice(1)
 
+    // transactions = transactions.map(item => console.log("item = ", item));
 
     // Print the result
+    // console.log("transactions.len = ", transactions.length);
 
-    transactions = transactions.map(item => {
+
+    transactions = transactions.map((item, ind) => {
+        // console.log("ind = ", ind, "item = ", item);
+
 
         let name, credited, debited
         let itemBal = parseFloat(item.split(" ").at(-1).split(",").join(""))
@@ -195,6 +225,7 @@ const parseSecurePdf = async (req, res) => {
         const password = req.body.pdfPassword || "";
         const bankType = req.body.bankType || "AXIS";
         // const smartSort = true;
+        console.log("bankType = ", bankType)
 
 
 
@@ -206,6 +237,7 @@ const parseSecurePdf = async (req, res) => {
         // For now, we return the raw text to confirm it opened.
 
         const text = data.text
+        let { contact, transactions } = contactWise(text, bankType)
 
         if (bankType === 'AXIS') {
             const { formattedStart, formattedEnd, totalDays } = getTransactionPeriod(text);
@@ -222,7 +254,7 @@ const parseSecurePdf = async (req, res) => {
                         debited: totalSpent
 
                     }],
-                    contact: contactWise(text).contact
+                    contact: contact
                 },
                 stats: {
                     transactionPeriod: `${formattedStart} - ${formattedEnd}`,
@@ -230,7 +262,7 @@ const parseSecurePdf = async (req, res) => {
                     totalAmountSpent: totalSpent,
                     totalAmountRecieved: totalReceived,
                     netAmount: netAmount,
-                    totalTransactions: contactWise(text).transactions
+                    totalTransactions: transactions
                 },
                 numpages: data.numpages,
                 text_preview: data.text.substring(0, 200) + "...", // Preview of extracted text
@@ -244,6 +276,9 @@ const parseSecurePdf = async (req, res) => {
                 success: true,
                 pdfType: "secure",
                 bankType: req.body.bankType,
+                groupings: {
+                    contact: contact
+                },
                 numpages: data.numpages,
                 text_preview: data.text.substring(0, 200) + "...", // Preview of extracted text
                 full_text_length: data.text.length,
