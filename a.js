@@ -1,22 +1,28 @@
-let text = " Welcome Mr. PRATIK DEVRAO JADHAV Customer XXXXXXX4719 As on 30-11-25 Balance Summary Rs.3807.9 Transaction Transaction Details Accounts MARATHA GALLI,NALDURG,MARATHA My Name Mr. PRATIK DEVRAO JADHAV My Address GALLI,NALDURG,OSMANABAD,Pune,MAHARASHTRA- 413602. MY INFORMATION MY HOME BRANCH INFORMATION Email ID jaXXXXXXXX@gmail.com Home Branch VISHRANTWADI Mobile 91XXXXXX55 Branch Number 14889 Code PAN BVXXXXX99D Branch Email ID sbi.14889@sbi.co.in Segment SILVER Branch Phone 020-7875559260 Number Toll Free 1800 11 2211 Number 1800 1234 KYC Status Compliant PLEASE DO NOT SHARE YOUR ATM, DEBIT/CREDIT CARD NUMBER, PIN AND OTP WITH ANYONE ELSE. BANK NEVER ASKS FOR SUCH INFORMATION. MY ACCOUNTS No. of Accounts Deposit Accounts Currency Available Balance Primary Secondary Transaction Accounts* SAVING ACCOUNT INR 1 0 3807.96 Total INR: Rs. 3807.96 *Each depositor is insured by the Deposit Insurance and Credit Guarantee Corporation(DICGC) upto the maximum of Rs. 5 Lakh, for both principal and interest amount held by him in the same right and same capacity. Visit https://sbi.co.in Customer Care Number : 1800 1234 Customer Care Email : customercare@sbi.co.in 1  of 4\n Welcome Mr. PRATIK DEVRAO JADHAV Customer XXXXXXX4719 As on 30-11-25 Balance Summary Rs.3807.9 Transaction Transaction Details Accounts TRANSACTION ACCOUNTS SAVINGS ACCOUNTS Holding Status Account Number Account Status Currency Current Balance Lien/Hold Amount MOD** Balance Available Balance P XXXXXXX1937 OPEN INR 3807.96 0.00 0.00 3807.96 **MOD: Multi Option Deposit ** P – Primary Account Holder **S – Secondary Account Holder Visit https://sbi.co.in Customer Care Number : 1800 1234 Customer Care Email : customercare@sbi.co.in 2  of 4\n Welcome Mr. PRATIK DEVRAO JADHAV Customer XXXXXXX4719 As on 30-11-25 Balance Summary Rs.3807.9 Transaction Transaction Details Accounts TRANSACTION DETAILS SAVING ACCOUNT XXXXXXX1937 Name of the Account Holder Mr. PRATIK DEVRAO JADHAV Address MARATHA GALLI,NALDURG,MARATHA GALLI,NALDURG,OSMANABAD,Pune,MAHARASHTRA-413602. Mode of Operation SINGLE Branch Name VISHRANTWADI Branch Code 14889 MICR Code 411002091 IFSC Code SBIN0014889 Nominee Registered Yes Available Balance 3807.96 Multi-Option Deposit Balance 0.00 TRANSACTION OVERVIEW Date Transaction Reference Ref.No./Chq.No. Credit Debit Balance Your Opening Balance on 01-11-25: null null 5219.96 null null null null 01-11-25 UPI/DR/530587817190/airtel/UTIB/airtel.pay/UPI - - 219.00 5000.96 01-11-25 UPI/CR/530528541380/PRATIK D/UTIB/jadhavp785/UPI - 4300.00 - 9300.96 02-11-25 UPI/DR/530663094623/maxfashion/UTIB/maxfashion/UPI - - 568.00 8732.96 05-11-25 UPI/CR/078277929724/Gosala P/SBIN/9381757367/Payme - 100.00 - 8832.96 07-11-25 UPI/DR/588241896402/SRIMANNA/YESB/Q247753151/Payme - - 400.00 8432.96 08-11-25 UPI/CR/543987233761/S HEMLA/SBIN/9908015247/Paymen - 30.00 - 8462.96 14-11-25 UPI/DR/531888058326/Airtel/YESB/airtel-pre/UPI - - 799.00 7663.96 14-11-25 UPI/CR/568495951786/GARAPATI/BKID/sivagarapa/UPI - 101.00 - 7764.96 14-11-25 UPI/CR/213110355114/DEORAO B/SBIN/8390152319/Payme - 600.00 - 8364.96 15-11-25 UPI/DR/531981807589/M VENKAT/KKBK/970310827@/UPI - - 1200.00 7164.96 16-11-25 UPI/DR/568656598268/I Lf Hr /UTIB/mab.037244/UPI - - 120.00 7044.96 17-11-25 UPI/CR/109436286507/DEORAO B/SBIN/8390152319/Payme - 300.00 - 7344.96 17-11-25 UPI/DR/532193783600/MYJIO/HDFC/myjio.ease/Pay - - 209.00 7135.96 22-11-25 UPI/DR/532601592825/MSRTC/AIRP/depo.136.3/Upi Txn - - 536.00 6599.96 23-11-25 UPI/DR/114558144623/PILLI BA/INDB/9553199104/PAY B - - 500.00 6099.96 24-11-25 UPI/DR/532845306367/PRATIK D/UTIB/jadhavp785/UPI - - 540.00 5559.96 24-11-25 UPI/DR/569485873871/XXXPGN K/KKBK/9515333493/UPI - - 100.00 5459.96 26-11-25 UPI/DR/569614313081/S TARAKE/INDB/7978260861/bhara - - 400.00 5059.96 26-11-25 UPI/DR/569680169252/Kundeti /SBIN/7989036010/UPI - - 500.00 4559.96 Visit https://sbi.co.in Customer Care Number : 1800 1234 Customer Care Email : customercare@sbi.co.in 3  of 4\n Welcome Mr. PRATIK DEVRAO JADHAV Customer XXXXXXX4719 As on 30-11-25 Balance Summary Rs.3807.9 Transaction Transaction Details Accounts Date Transaction Reference Ref.No./Chq.No. Credit Debit Balance 26-11-25 UPI/CR/043118338931/Kundeti /SBIN/7989036010/Payme - 1.00 - 4560.96 28-11-25 IMPS/533212105162/ICN-XX388-NEXTGEN /rcode - 574.00 - 5134.96 29-11-25 UPI/DR/533309763722/BHARTI A/AIRP/airtelprep/Payme - - 219.00 4915.96 30-11-25 UPI/DR/533457384675/GETKETCH/AIRP/getketch84/BRAND - - 633.00 4282.96 30-11-25 UPI/DR/533498590779/Isha Lif/UTIB/mab.037244/UPI - - 475.00 3807.96 Your Closing Balance on 30-11-25: 3807.96 *All dates are in DD-MM-YY format Contents of this statement will be considered correct if no error is reported within 30 days of receipt of the statement. Visit https://sbi.co.in Customer Care Number : 1800 1234 Customer Care Email : customercare@sbi.co.in 4  of 4\n"
-const startMarker = "Your Opening Balance on ";
-const endMarker = "Your Closing Balance on ";
-
-// Split and extract the content
-let parts = text.split(startMarker);
-if (parts.length > 1) {
-    // Reconstruct the start and get the rest
-    let remaining = startMarker + parts[1];
-
-    // Split by the end marker to stop there
-    let endParts = remaining.split(endMarker);
-    if (endParts.length > 0) {
-        // Reconstruct up to the end marker
-        let finalString = endParts[0] + endMarker;
-        console.log(finalString);
-        let transactions = finalString.split(/(?=\d{2}-\d{2}-\d{4})/);
-        console.log(transactions);
-    }
-} else {
-    console.log("Opening balance marker not found found.");
-}
+let transactions = [
+    'UPI/DR/530587817190/airtel/UTIB/airtel.pay/UPI 219.00 5000.96',
+    'UPI/CR/530528541380/PRATIK D/UTIB/jadhavp785/UPI 4300.00 9300.96',
+    'UPI/DR/530663094623/maxfashion/UTIB/maxfashion/UPI 568.00 8732.96',
+    'UPI/CR/078277929724/Gosala P/SBIN/9381757367/Payme 100.00 8832.96',
+    'UPI/DR/588241896402/SRIMANNA/YESB/Q247753151/Payme 400.00 8432.96',
+    'UPI/CR/543987233761/S HEMLA/SBIN/9908015247/Paymen 30.00 8462.96',
+    'UPI/DR/531888058326/Airtel/YESB/airtel-pre/UPI 799.00 7663.96',
+    'UPI/CR/568495951786/GARAPATI/BKID/sivagarapa/UPI 101.00 7764.96',
+    'UPI/CR/213110355114/DEORAO B/SBIN/8390152319/Payme 600.00 8364.96',
+    'UPI/DR/531981807589/M VENKAT/KKBK/970310827@/UPI 1200.00 7164.96',
+    'UPI/DR/568656598268/I Lf Hr /UTIB/mab.037244/UPI 120.00 7044.96',
+    'UPI/CR/109436286507/DEORAO B/SBIN/8390152319/Payme 300.00 7344.96',
+    'UPI/DR/532193783600/MYJIO/HDFC/myjio.ease/Pay 209.00 7135.96',
+    'UPI/DR/532601592825/MSRTC/AIRP/depo.136.3/Upi Txn 536.00 6599.96',
+    'UPI/DR/114558144623/PILLI BA/INDB/9553199104/PAY B 500.00 6099.96',
+    'UPI/DR/532845306367/PRATIK D/UTIB/jadhavp785/UPI 540.00 5559.96',
+    'UPI/DR/569485873871/XXXPGN K/KKBK/9515333493/UPI 100.00 5459.96',
+    'UPI/DR/569614313081/S TARAKE/INDB/7978260861/bhara 400.00 5059.96',
+    'UPI/DR/569680169252/Kundeti /SBIN/7989036010/UPI 500.00 4559.96 Visit https://sbi.co.in Customer Care Number : 1800 1234 Customer Care Email : customercare@sbi.co.in 3  of 4\n' +
+    ' Welcome Mr. PRATIK DEVRAO JADHAV Customer XXXXXXX4719 As on',
+    'Balance Summary Rs.3807.9 Transaction Transaction Details Accounts Date Transaction Reference Ref.No./Chq.No. Credit Debit Balance',
+    'UPI/CR/043118338931/Kundeti /SBIN/7989036010/Payme 1.00 4560.96',
+    'IMPS/533212105162/ICN-XX388-NEXTGEN /rcode 574.00 5134.96',
+    'UPI/DR/533309763722/BHARTI A/AIRP/airtelprep/Payme 219.00 4915.96',
+    'UPI/DR/533457384675/GETKETCH/AIRP/getketch84/BRAND 633.00 4282.96',
+    'UPI/DR/533498590779/Isha Lif/UTIB/mab.037244/UPI 475.00 3807.96'
+]
