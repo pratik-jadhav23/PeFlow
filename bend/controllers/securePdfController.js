@@ -46,7 +46,7 @@ const contactWise = (text, bankType) => {
         // console.log("transactions SBI = ", transactions, "transactions length SBI = ", transactions.length);
     }
 
-    console.log("final data = ", data);
+    // console.log("final data = ", data);
     console.log("currentBalance = ", currentBalance);
     console.log("transactions = ", transactions);
     console.log("transactions.length = ", transactions.length);
