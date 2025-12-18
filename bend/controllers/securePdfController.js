@@ -33,7 +33,7 @@ const contactWise = (text, bankType) => {
         currentBalance = parseFloat(data[ind].trim().split(" ", 3)[0])
         data = data[ind].split(/(Closing Balance)/)[0]
         transactions = data.split(/(?=\d{2}-\d{2}-\d{4})/);
-        transactions = transactions.map(item => item.trim()).splice(1)
+        transactions = transactions.map(item => item.replaceAll(",", "").trim()).splice(1)
 
         // console.log("transactions AXIS = ", transactions, "transactions length AXIS = ", transactions.length);
     }
@@ -121,7 +121,9 @@ const contactWise = (text, bankType) => {
 
     })
 
-    return { contact, ["transactions"]: transactions.length }
+    let totalTransactionsCount = contact.reduce((acc, item) => acc + item.transactionsCount, 0)
+
+    return { contact, ["transactions"]: transactions.length, totalTransactionsCount }
 
 
     // largeData = {data}
@@ -237,7 +239,7 @@ const parseSecurePdf = async (req, res) => {
         // For now, we return the raw text to confirm it opened.
 
         const text = data.text
-        let { contact, transactions } = contactWise(text, bankType)
+        let { contact, transactions, totalTransactionsCount } = contactWise(text, bankType)
 
         if (bankType === 'AXIS') {
             const { formattedStart, formattedEnd, totalDays } = getTransactionPeriod(text);
@@ -254,7 +256,8 @@ const parseSecurePdf = async (req, res) => {
                         debited: totalSpent
 
                     }],
-                    contact: contact
+                    contact: contact,
+                    totalTransactionsCount: totalTransactionsCount
                 },
                 stats: {
                     transactionPeriod: `${formattedStart} - ${formattedEnd}`,
