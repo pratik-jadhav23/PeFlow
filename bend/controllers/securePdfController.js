@@ -18,6 +18,7 @@ const contactWise = (text, bankType) => {
     const contact = []
     let transactions
     let currentBalance
+    let openingBalance = 0.0
     let totalSpent = 0.0;
     let totalReceived = 0.0;
     let data = text.split(/(Opening Balance)/)
@@ -54,7 +55,7 @@ const contactWise = (text, bankType) => {
         })
         transactions = transactions.filter((transaction) => transaction !== "")
     }
-
+    openingBalance = currentBalance
     // console.log("final data = ", data);
     // console.log("currentBalance = ", currentBalance);
     // console.log("transactions = ", transactions);
@@ -70,24 +71,30 @@ const contactWise = (text, bankType) => {
     // transactions = transactions.map(item => item.trim()).splice(1)
 
 
-
+    let creditedCount = 0
+    let debitedCount = 0
+    let transactionNamesArray = []
     transactions = transactions.map((transaction, ind) => {
 
 
         let name, credited, debited
         let transactionBal = parseFloat(transaction.split(" ").at(-1).split(",").join(""))
         let transactionDateLength = transaction.split(" ").at(0).length
-
+        // console.log("transactionDate = ", transaction.split(" ").at(0), "transactionDateLength = ", transactionDateLength)
 
         if (transactionBal > currentBalance) {
             //credited
-            if (transaction.slice(transactionDateLength).startsWith("UPI/")) {
+            if (transaction.slice(transactionDateLength).trim().startsWith("UPI/")) {
                 name = transaction.slice(transactionDateLength).split("/")[3].trim()
             }
             else {
-                name = transaction.slice(transactionDateLength).split("/")[0].trim()
+                name = transaction.slice(transactionDateLength).trim().split("/")[0].trim()
             }
+            transactionNamesArray.push(name)
+            // console.log("transaction.split(' ').at(-2) = ", transaction.split(" ").at(-2));
+            
             credited = parseFloat(transaction.split(" ").at(-2))
+            // console.log("name = ", name, "credited = ", credited, "transactionBal = ", transactionBal, "currentBalance = ", currentBalance)
             let findIndex = contact.findIndex(item => item.name === name)
             if (findIndex !== -1) {
                 contact[findIndex].credited += credited
@@ -97,44 +104,16 @@ const contactWise = (text, bankType) => {
                 contact.push({ name: name, debited: 0, credited: credited, transactionsCount: 1 })
             }
             totalReceived += credited
-
-
-
-
-            // if (item.slice(11).startsWith("UPI/")) {
-
-            //     name = item.slice(11).split("/")[3]
-
-            //     credited = parseFloat(item.slice(11).split("/").at(-1).trim().split(" ").at(0).split(",").join(""))
-            //     if (contact.findIndex(item => item.name === name) !== -1) {
-
-            //         contact[contact.findIndex(item => item.name === name)].credited += credited
-            //         contact[contact.findIndex(item => item.name === name)].transactionsCount += 1
-
-            //     }
-            //     else {
-            //         contact.push({ name: name, debited: 0, credited: credited, transactionsCount: 1 })
-            //     }
-
-            // }
-            // else {
-
-            //     name = item.slice(11).split("/")[0]
-
-
-            //     credited = parseFloat(item.slice(11).split("/").at(-1).trim().split(" ").at(-2).split(",").join(""))
-
-            // }
-
+            creditedCount += 1
             currentBalance = transactionBal
 
         }
         else {
             //debited
             name = transaction.slice(transactionDateLength).split("/")[3].trim()
+            transactionNamesArray.push(name)
             debited = parseFloat(transaction.split(" ").at(-2))
-            // debited = parseFloat(item.slice(11).split("/").at(-1).trim().split(" ").at(-2).split(",").join(""))
-
+            // console.log("name = ", name, "debited = ", debited, "transactionBal = ", transactionBal, "currentBalance = ", currentBalance)
             let findIndex = contact.findIndex(item => item.name === name)
             if (findIndex !== -1) {
                 contact[findIndex].debited += debited
@@ -145,14 +124,20 @@ const contactWise = (text, bankType) => {
                 contact.push({ name: name, debited: debited, credited: 0, transactionsCount: 1 })
             }
             totalSpent += debited
+            debitedCount += 1
             currentBalance = transactionBal
         }
 
     })
-
+    
     let totalTransactionsCount = contact.reduce((acc, item) => acc + item.transactionsCount, 0)
-
-    return { contact, ["transactions"]: transactions.length, totalTransactionsCount, totalSpent, totalReceived }
+    console.log("creditedCount = ", creditedCount, "debitedCount = ", debitedCount, "credited+debited = ", creditedCount + debitedCount)
+    console.log("totalTransactionsCount = ", totalTransactionsCount);
+    console.log("transactionNamesArray = ", transactionNamesArray);
+    
+    
+    
+    return { contact, ["transactions"]: transactions.length, totalTransactionsCount, totalSpent, totalReceived, openingBalance }
 
 
     // largeData = {data}
@@ -317,13 +302,11 @@ const parseSecurePdf = async (req, res) => {
         // For now, we return the raw text to confirm it opened.
 
         const text = data.text
-        let { contact, transactions, totalTransactionsCount, totalSpent, totalReceived } = contactWise(text, bankType)
+        let { contact, transactions, totalTransactionsCount, totalSpent, totalReceived, openingBalance } = contactWise(text, bankType)
         let netAmount = totalReceived - totalSpent
 
         const { formattedStart, formattedEnd, totalDays } = getTransactionPeriod(text, bankType);
-        if (bankType === 'AXIS') {
-            // const { totalSpent, totalReceived, netAmount } = parseBankStatement(text);
-            res.status(200).json({
+         res.status(200).json({
                 success: true,
                 pdfType: "secure",
                 bankType: req.body.bankType,
@@ -343,7 +326,9 @@ const parseSecurePdf = async (req, res) => {
                     totalAmountSpent: totalSpent,
                     totalAmountRecieved: totalReceived,
                     netAmount: netAmount,
-                    totalTransactions: transactions
+                    totalTransactions: transactions,
+                    openingBalance: openingBalance,
+                    openingBalanceDate: formattedStart
                 },
                 numpages: data.numpages,
                 text_preview: data.text.substring(0, 200) + "...", // Preview of extracted text
@@ -351,38 +336,6 @@ const parseSecurePdf = async (req, res) => {
                 text: data.text,
                 // transactions: parseTransactions(data.text) // Call your parser here
             })
-        }
-        else {
-            res.status(200).json({
-                success: true,
-                pdfType: "secure",
-                bankType: req.body.bankType,
-                groupings: {
-                    month: [{
-                        month: formattedStart.split(" ")[0] + " " + formattedStart.split(" ").at(-1),
-                        credited: totalReceived,
-                        debited: totalSpent
-
-                    }],
-                    contact: contact,
-                    totalTransactionsCount: totalTransactionsCount
-                },
-                stats: {
-                    transactionPeriod: `${formattedStart} - ${formattedEnd}`,
-                    totalDays: totalDays,
-                    totalAmountSpent: totalSpent,
-                    totalAmountRecieved: totalReceived,
-                    netAmount: netAmount,
-                    totalTransactions: transactions
-                },
-                numpages: data.numpages,
-                text_preview: data.text.substring(0, 200) + "...", // Preview of extracted text
-                full_text_length: data.text.length,
-                text: data.text,
-                // transactions: parseTransactions(data.text) // Call your parser here
-            })
-
-        }
 
         // const { formattedStart, formattedEnd, totalDays } = getTransactionPeriod(text);
         // const { totalSpent, totalReceived, netAmount } = parseBankStatement(text);

@@ -56,7 +56,7 @@ const Insights = ({ data }) => {
             <Upload className="w-5 h-5" />
           </Link>
         </div>
-        <Stats data={data?.stats} />
+        <Stats data={data?.stats} pdfType={data?.pdfType} />
 
 
         {/* monthly cash in and out */}

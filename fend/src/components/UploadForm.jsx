@@ -127,7 +127,7 @@ const UploadForm = ({ setData }) => {
             <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 mb-5 text-center">
                 Upload your Transactions PDF
             </h2>
-            <h3 className="text-sm sm:text-md md:text-lg font-semibold text-gray-800 mb-5 text-center">select pdf type</h3>
+            <h3 className="text-sm sm:text-md md:text-lg font-semibold text-gray-800 mb-1 text-center">select pdf type</h3>
             <div className="flex items-center gap-2 sm:gap-3 pb-2">
                 <input type="radio" name="pdfType" id="phonepay" value="normal" onChange={(e) => {
                     // console.log(e.target.value)
@@ -206,32 +206,36 @@ const UploadForm = ({ setData }) => {
             }
 
             {file && (
-                <button
-                    onClick={handleSubmit}
-                    disabled={status.loading || !file}
-                    className="w-full bg-[#5A2DAF] text-white py-2 sm:py-2.5 rounded-lg font-semibold hover:bg-purple-800 transition disabled:opacity-50 text-sm sm:text-base cursor-pointer"
-                >
-                    {status.loading ? "Analyzing..." : "Analyze Statements"}
-                </button>
+                <div>
+                    {pdfType.type === "secure" && <div className="flex items-center justify-center sm:gap-3 mb-4 sm:plr-8 relative max-w-xs mx-auto">
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            name="pdfPassword"
+                            id=""
+                            placeholder="Enter Password"
+                            className="w-full pl-3 pr-6 py-2 border outline-2 outline-gray-300 rounded-lg focus:outline-black focus:outline-2"
+                            onChange={(e) => setPdfType({ ...pdfType, password: e.target.value })}
+                            
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 cursor-pointer"
+                        >
+                            {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+                        </button>
+                    </div>}
+
+                    <button
+                        onClick={handleSubmit}
+                        disabled={status.loading || !file}
+                        className="w-full bg-[#5A2DAF] text-white py-2 sm:py-2.5 rounded-lg font-semibold hover:bg-purple-800 transition disabled:opacity-50 text-sm sm:text-base cursor-pointer"
+                    >
+                        {status.loading ? "Analyzing..." : "Analyze Statements"}
+                    </button>
+                </div>
             )}
 
-            {pdfType.type === "secure" && <div className="flex items-center justify-center sm:gap-3 mb-4 sm:plr-8 relative max-w-xs mx-auto">
-                <input
-                    type={showPassword ? "text" : "password"}
-                    name="pdfPassword"
-                    id=""
-                    placeholder="Enter Password"
-                    className="w-full pl-3 pr-6 py-2 border outline-2 outline-gray-300 rounded-lg focus:outline-black focus:outline-2"
-                    onChange={(e) => setPdfType({ ...pdfType, password: e.target.value })}
-                />
-                <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 cursor-pointer"
-                >
-                    {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
-                </button>
-            </div>}
 
             {status.msg && (
                 <p className="mt-3 flex items-start gap-1 text-sm text-red-600">
