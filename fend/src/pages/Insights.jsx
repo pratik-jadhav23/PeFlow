@@ -5,6 +5,7 @@ import Stats from '../components/Stats'
 import MonthlyCharts from '../charts/MonthlyChart'
 import ContactChart from '../charts/ContactChart'
 import Top5CDChart from '../charts/Top5CDChart'
+import WeeklyTransactionChart from '../charts/WeeklyTransactionChart'
 
 const Insights = ({ data }) => {
 
@@ -67,6 +68,7 @@ const Insights = ({ data }) => {
           </h1>
           <div className='my-5 sm:mt-8 h-68 sm:h-80 lg:h-96'>
             <MonthlyCharts data={data?.groupings?.month} />
+            {/* <WeeklyTransactionChart transactions={data?.transactions} /> */}
           </div>
         </div>
 

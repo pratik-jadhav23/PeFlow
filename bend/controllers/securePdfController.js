@@ -18,7 +18,8 @@ const contactWise = (text, bankType) => {
     const contact = []
     let transactions
     let currentBalance
-    let openingBalance = 0.0
+    let openingBalance
+    let closingBalance = 0.0
     let totalSpent = 0.0;
     let totalReceived = 0.0;
     let data = text.split(/(Opening Balance)/)
@@ -32,11 +33,14 @@ const contactWise = (text, bankType) => {
 
     if (bankType === "AXIS") {
         currentBalance = parseFloat(data[ind].trim().split(" ", 3)[0])
+        closingBalance = parseFloat(text.split(/(Closing Balance)/)[text.split(/(Closing Balance)/).indexOf("Closing Balance") + 1].trim().split("\n")[0].trim())
         data = data[ind].split(/(Closing Balance)/)[0]
         transactions = data.split(/(?=\d{2}-\d{2}-\d{4})/);
         transactions = transactions.map(item => item.replaceAll(",", "").trim()).splice(1)
     }
     else if (bankType === "SBI") {
+        closingBalance = parseFloat(data[ind].split(/(Your Closing Balance on)/)[data[ind].split(/(Your Closing Balance on)/).indexOf("Your Closing Balance on") + 1].trim().split(" ")[1].trim())
+        // console.log("closing balance = ", closingBalance)
         data = data[ind].split(/(Your Closing Balance)/)[0]
         transactions = data.split(/(?=\d{2}-\d{2}-\d{2})/);
         currentBalance = parseFloat(transactions[1].trim().split(" ")[3])
@@ -59,7 +63,7 @@ const contactWise = (text, bankType) => {
     // console.log("final data = ", data);
     // console.log("currentBalance = ", currentBalance);
     // console.log("transactions = ", transactions);
-    // console.log("transactions.length = ", transactions.length);
+    // console.log("transactions.length = ", transactions.length); 
 
 
 
@@ -92,7 +96,7 @@ const contactWise = (text, bankType) => {
             }
             transactionNamesArray.push(name)
             // console.log("transaction.split(' ').at(-2) = ", transaction.split(" ").at(-2));
-            
+
             credited = parseFloat(transaction.split(" ").at(-2))
             // console.log("name = ", name, "credited = ", credited, "transactionBal = ", transactionBal, "currentBalance = ", currentBalance)
             let findIndex = contact.findIndex(item => item.name === name)
@@ -127,17 +131,18 @@ const contactWise = (text, bankType) => {
             debitedCount += 1
             currentBalance = transactionBal
         }
+        return transaction
 
     })
-    
+
     let totalTransactionsCount = contact.reduce((acc, item) => acc + item.transactionsCount, 0)
-    console.log("creditedCount = ", creditedCount, "debitedCount = ", debitedCount, "credited+debited = ", creditedCount + debitedCount)
-    console.log("totalTransactionsCount = ", totalTransactionsCount);
-    console.log("transactionNamesArray = ", transactionNamesArray);
-    
-    
-    
-    return { contact, ["transactions"]: transactions.length, totalTransactionsCount, totalSpent, totalReceived, openingBalance }
+    // console.log("creditedCount = ", creditedCount, "debitedCount = ", debitedCount, "credited+debited = ", creditedCount + debitedCount)
+    // console.log("totalTransactionsCount = ", totalTransactionsCount);
+    // console.log("transactionNamesArray = ", transactionNamesArray);
+
+
+
+    return { contact, transactionsLength: transactions.length, totalTransactionsCount, totalSpent, totalReceived, openingBalance, closingBalance, transactions }
 
 
     // largeData = {data}
@@ -149,7 +154,7 @@ const contactWise = (text, bankType) => {
 const getTransactionPeriod = (text, bankType) => {
     if (bankType === 'AXIS') {
         let dateMatch = text.match(/(\d{2}\/\d{2}\/\d{4})\s+to\s+(\d{2}\/\d{2}\/\d{4})/);
-        console.log("dateMatch = ", dateMatch)
+        // console.log("dateMatch = ", dateMatch)
 
         if (dateMatch) {
 
@@ -302,62 +307,52 @@ const parseSecurePdf = async (req, res) => {
         // For now, we return the raw text to confirm it opened.
 
         const text = data.text
-        let { contact, transactions, totalTransactionsCount, totalSpent, totalReceived, openingBalance } = contactWise(text, bankType)
+        let { contact, transactionsLength, totalTransactionsCount, totalSpent, totalReceived, openingBalance, closingBalance, transactions } = contactWise(text, bankType)
         let netAmount = totalReceived - totalSpent
 
         const { formattedStart, formattedEnd, totalDays } = getTransactionPeriod(text, bankType);
-         res.status(200).json({
-                success: true,
-                pdfType: "secure",
-                bankType: req.body.bankType,
-                groupings: {
-                    month: [{
-                        month: formattedStart.split(" ")[0] + " " + formattedStart.split(" ").at(-1),
-                        credited: totalReceived,
-                        debited: totalSpent
+        res.status(200).json({
+            success: true,
+            pdfType: "secure",
+            bankType: req.body.bankType,
+            groupings: {
+                month: [{
+                    month: formattedStart.split(" ")[0] + " " + formattedStart.split(" ").at(-1),
+                    credited: totalReceived,
+                    debited: totalSpent
 
-                    }],
-                    contact: contact,
-                    totalTransactionsCount: totalTransactionsCount
-                },
-                stats: {
-                    transactionPeriod: `${formattedStart} - ${formattedEnd}`,
-                    totalDays: totalDays,
-                    totalAmountSpent: totalSpent,
-                    totalAmountRecieved: totalReceived,
-                    netAmount: netAmount,
-                    totalTransactions: transactions,
-                    openingBalance: openingBalance,
-                    openingBalanceDate: formattedStart
-                },
-                numpages: data.numpages,
-                text_preview: data.text.substring(0, 200) + "...", // Preview of extracted text
-                full_text_length: data.text.length,
-                text: data.text,
-                // transactions: parseTransactions(data.text) // Call your parser here
-            })
-
-        // const { formattedStart, formattedEnd, totalDays } = getTransactionPeriod(text);
-        // const { totalSpent, totalReceived, netAmount } = parseBankStatement(text);
-
-
-        // const {groupings} = parseBankStatement(text);
-
-
-        // const groupings = groupingByContacts(text);
-
-
-
-
+                }],
+                contact: contact,
+                totalTransactionsCount: totalTransactionsCount
+            },
+            stats: {
+                transactionPeriod: `${formattedStart} - ${formattedEnd}`,
+                totalDays: totalDays,
+                totalAmountSpent: totalSpent,
+                totalAmountRecieved: totalReceived,
+                netAmount: netAmount,
+                totalTransactions: transactionsLength,
+                openingBalance: openingBalance,
+                openingBalanceDate: formattedStart,
+                closingBalance: closingBalance,
+                closingBalanceDate: formattedEnd
+            },
+            transactions: transactions,
+            transactionsLength: transactionsLength,
+            numpages: data.numpages,
+            text_preview: data.text.substring(0, 200) + "...", // Preview of extracted text
+            full_text_length: data.text.length,
+            text: data.text,
+        })
 
     } catch (err) {
         console.error('Error parsing PDF:', err.message);
 
         if (err.message.includes('Password')) {
-            return res.status(401).json({ error: 'Invalid password or password required.' });
+            return res.status(401).json({ message: 'Invalid password or password required.' });
         }
 
-        res.status(500).json({ error: 'Failed to process PDF', details: 'Error parsing PDF: ' + err.message });
+        res.status(500).json({ message: 'Failed to process PDF', details: 'Error parsing PDF: ' + err.message });
     }
 };
 

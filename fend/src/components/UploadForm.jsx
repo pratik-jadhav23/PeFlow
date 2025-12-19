@@ -75,6 +75,11 @@ const UploadForm = ({ setData }) => {
             return;
         }
 
+        if (pdfType.type === "secure" && !pdfType.password) {
+            setStatus((s) => ({ ...s, msg: "Password is required for secure PDF." }));
+            return;
+        }
+
         setStatus((s) => ({ ...s, loading: true, msg: "" }));
         setData("");
 
@@ -215,7 +220,7 @@ const UploadForm = ({ setData }) => {
                             placeholder="Enter Password"
                             className="w-full pl-3 pr-6 py-2 border outline-2 outline-gray-300 rounded-lg focus:outline-black focus:outline-2"
                             onChange={(e) => setPdfType({ ...pdfType, password: e.target.value })}
-                            
+                            required
                         />
                         <button
                             type="button"
