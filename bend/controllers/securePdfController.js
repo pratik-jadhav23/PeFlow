@@ -84,6 +84,7 @@ const contactWise = (text, bankType) => {
         let name, credited, debited
         let transactionBal = parseFloat(transaction.split(" ").at(-1).split(",").join(""))
         let transactionDateLength = transaction.split(" ").at(0).length
+        let obj={}
         // console.log("transactionDate = ", transaction.split(" ").at(0), "transactionDateLength = ", transactionDateLength)
 
         if (transactionBal > currentBalance) {
@@ -95,10 +96,8 @@ const contactWise = (text, bankType) => {
                 name = transaction.slice(transactionDateLength).trim().split("/")[0].trim()
             }
             transactionNamesArray.push(name)
-            // console.log("transaction.split(' ').at(-2) = ", transaction.split(" ").at(-2));
 
             credited = parseFloat(transaction.split(" ").at(-2))
-            // console.log("name = ", name, "credited = ", credited, "transactionBal = ", transactionBal, "currentBalance = ", currentBalance)
             let findIndex = contact.findIndex(item => item.name === name)
             if (findIndex !== -1) {
                 contact[findIndex].credited += credited
