@@ -76,7 +76,7 @@ const Insights = ({ data }) => {
           <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">
             Weekly Cash In & Out
           </h1>
-          <div className='my-5 sm:mt-8 h-68 sm:h-80 lg:h-96'>
+          <div className='my-5 sm:mt-8 h-104 sm:h-92 lg:h-96'>
             <WeeklyTransactionGraph transactions={data?.transactions} />
           </div>
         </div>}
