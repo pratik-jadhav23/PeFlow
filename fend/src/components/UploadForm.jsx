@@ -95,13 +95,14 @@ const UploadForm = ({ setData }) => {
 
             if (pdfType.type === "normal") {
                 //for normal pdfs
-                // res = await axios.post(`${import.meta.env.VITE_API_URL}/parse`, formData);
-                res = await axios.post(`http://localhost:5000/parse`, formData);
+                res = await axios.post(`${import.meta.env.VITE_API_URL}/parse`, formData);
+                // res = await axios.post(`http://localhost:5000/parse`, formData);
 
             }
             else {
                 //for secure pdfs
-                res = await axios.post(`http://localhost:5000/secure/parse-secure`, formData);
+                // res = await axios.post(`http://localhost:5000/secure/parse-secure`, formData);
+                res = await axios.post(`${import.meta.env.VITE_API_URL}/secure/parse-secure`, formData);
             }
 
 
