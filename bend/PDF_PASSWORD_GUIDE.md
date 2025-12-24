@@ -40,7 +40,8 @@ You can test this using Postman or a similar tool:
 *   **Method**: `POST`
 *   **Body (form-data)**:
     *   `file`: [Select your PDF file]
-    *   `password`: [Enter the PDF password] (Optional, only if encrypted)
+    *   `password`: [Enter the PDF password] (mandatory, only if encrypted, for password protected PDFs, for phonepay PDFs, this field is optional)
+    *   `bankType`: [Enter the bank type] (mandatory, only if encrypted, for password protected PDFs, for phonepay PDFs, this field is optional)
 
 ## 5. Summary of Changes
 *   **No new `npm install` required**: We reused `pdf-parse`'s dependencies.
