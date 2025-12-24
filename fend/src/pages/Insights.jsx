@@ -72,14 +72,14 @@ const Insights = ({ data }) => {
         </div>}
 
         {/* Weekly cash in and out */}
-        <div className='my-5 sm:my-6 md:my-8 lg:my-10 xl:my-14'>
+        {data?.pdfType === "secure" && <div className='my-5 sm:my-6 md:my-8 lg:my-10 xl:my-14'>
           <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">
             Weekly Cash In & Out
           </h1>
           <div className='my-5 sm:mt-8 h-68 sm:h-80 lg:h-96'>
             <WeeklyTransactionGraph transactions={data?.transactions} />
           </div>
-        </div>
+        </div>}
 
 
 
