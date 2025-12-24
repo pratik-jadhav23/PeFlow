@@ -12,7 +12,7 @@ const HowItWorks = () => {
                         How does it work?
                     </h2>
                     <p className="max-w-2xl mx-auto mt-4 text-base text-gray-600 leading-relaxed md:text-2xl">
-                        Analyze your PhonePe statements in just 3 simple steps
+                        Analyze your PhonePe/Bank statements in just 3 simple steps
                     </p>
                 </div>
 
@@ -41,8 +41,10 @@ const HowItWorks = () => {
                                 Upload Your Statement
                             </h3>
                             <p className="mt-4 text-base text-gray-600 md:text-lg">
-                                Download your PDF statement from the PhonePe app and upload it here.
+                                Download your PDF statement from the PhonePe/Bank app or Gmail and upload it here.
                             </p>
+                            <p className="mt-2 text-base text-gray-600 md:text-lg">*If Bank PDF, provide appropiate password.</p>
+                           
                         </div>
 
                         {/* Step 2 */}
@@ -53,7 +55,7 @@ const HowItWorks = () => {
                             <h3 className="mt-6 text-xl text-gray-900 font-semibold leading-tight md:mt-10">
                                 Automatic Parsing
                             </h3>
-                            <p className="mt-4 text-base text-gray-600 md:text-lg">
+                            <p className="mt-4 text-base     text-gray-600 md:text-lg">
                                 Our tool extracts transactions and organizes them into categories instantly.
                             </p>
                         </div>
@@ -71,6 +73,7 @@ const HowItWorks = () => {
                             </p>
                         </div>
                     </div>
+                  
                 </div>
             </div>
 
