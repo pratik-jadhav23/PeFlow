@@ -5,7 +5,7 @@ import Stats from '../components/Stats'
 import MonthlyCharts from '../charts/MonthlyChart'
 import ContactChart from '../charts/ContactChart'
 import Top5CDChart from '../charts/Top5CDChart'
-import WeeklyTransactionChart from '../charts/WeeklyTransactionChart'
+import WeeklyTransactionGraph from '../charts/WeeklyTransactionGraph'
 
 const Insights = ({ data }) => {
 
@@ -61,8 +61,7 @@ const Insights = ({ data }) => {
 
 
         {/* monthly cash in and out */}
-
-        <div className='my-5 sm:my-6 md:my-8 lg:my-10 xl:my-14'>
+        {data?.pdfType === "normal" && <div className='my-5 sm:my-6 md:my-8 lg:my-10 xl:my-14'>
           <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">
             Monthly Cash In & Out
           </h1>
@@ -70,7 +69,18 @@ const Insights = ({ data }) => {
             <MonthlyCharts data={data?.groupings?.month} />
             {/* <WeeklyTransactionChart transactions={data?.transactions} /> */}
           </div>
+        </div>}
+
+        {/* Weekly cash in and out */}
+        <div className='my-5 sm:my-6 md:my-8 lg:my-10 xl:my-14'>
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">
+            Weekly Cash In & Out
+          </h1>
+          <div className='my-5 sm:mt-8 h-68 sm:h-80 lg:h-96'>
+            <WeeklyTransactionGraph transactions={data?.transactions} />
+          </div>
         </div>
+
 
 
         {/* //top contacts by spend and receive */}

@@ -77,14 +77,14 @@ const contactWise = (text, bankType) => {
 
     let creditedCount = 0
     let debitedCount = 0
-    let transactionNamesArray = []
+    // let checkObj = []
     transactions = transactions.map((transaction, ind) => {
 
 
         let name, credited, debited
         let transactionBal = parseFloat(transaction.split(" ").at(-1).split(",").join(""))
         let transactionDateLength = transaction.split(" ").at(0).length
-        let obj={}
+        let obj = {}
         // console.log("transactionDate = ", transaction.split(" ").at(0), "transactionDateLength = ", transactionDateLength)
 
         if (transactionBal > currentBalance) {
@@ -95,8 +95,6 @@ const contactWise = (text, bankType) => {
             else {
                 name = transaction.slice(transactionDateLength).trim().split("/")[0].trim()
             }
-            transactionNamesArray.push(name)
-
             credited = parseFloat(transaction.split(" ").at(-2))
             let findIndex = contact.findIndex(item => item.name === name)
             if (findIndex !== -1) {
@@ -109,12 +107,13 @@ const contactWise = (text, bankType) => {
             totalReceived += credited
             creditedCount += 1
             currentBalance = transactionBal
+            obj = { date: transaction.split(" ").at(0), name, credited, debited: 0 }
+
 
         }
         else {
             //debited
             name = transaction.slice(transactionDateLength).split("/")[3].trim()
-            transactionNamesArray.push(name)
             debited = parseFloat(transaction.split(" ").at(-2))
             // console.log("name = ", name, "debited = ", debited, "transactionBal = ", transactionBal, "currentBalance = ", currentBalance)
             let findIndex = contact.findIndex(item => item.name === name)
@@ -129,16 +128,19 @@ const contactWise = (text, bankType) => {
             totalSpent += debited
             debitedCount += 1
             currentBalance = transactionBal
+            obj = { date: transaction.split(" ").at(0), name, credited: 0, debited }
+
         }
-        return transaction
+
+        return obj
 
     })
 
     let totalTransactionsCount = contact.reduce((acc, item) => acc + item.transactionsCount, 0)
     // console.log("creditedCount = ", creditedCount, "debitedCount = ", debitedCount, "credited+debited = ", creditedCount + debitedCount)
     // console.log("totalTransactionsCount = ", totalTransactionsCount);
-    // console.log("transactionNamesArray = ", transactionNamesArray);
-
+    // console.log("checkObj = ", checkObj);
+    // console.log("checkObj.length = ", checkObj.length); 
 
 
     return { contact, transactionsLength: transactions.length, totalTransactionsCount, totalSpent, totalReceived, openingBalance, closingBalance, transactions }

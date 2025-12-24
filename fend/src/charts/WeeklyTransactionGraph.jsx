@@ -72,8 +72,9 @@ const WeeklyTransactionGraph = ({ transactions }) => {
         <YAxis />
         <Tooltip />
         <Legend />
-        <Bar dataKey="credited" name="Credited" />
-        <Bar dataKey="debited" name="Debited" />
+        <Bar dataKey="credited" name="Credited" fill="#22C55E" />
+        <Bar dataKey="debited" name="Debited" fill="#EF4444" />
+
       </BarChart>
     </ResponsiveContainer>
   );
