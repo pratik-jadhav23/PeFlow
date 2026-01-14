@@ -15,139 +15,141 @@ const monthWise = (text) => {
 }
 
 const contactWise = (text, bankType) => {
-    const contact = []
-    let transactions
-    let currentBalance
-    let openingBalance
-    let closingBalance = 0.0
-    let totalSpent = 0.0;
-    let totalReceived = 0.0;
-    let data = text.split(/(Opening Balance)/)
-    let ind = data.indexOf("Opening Balance") + 1
-    // let transactionStartDate = data[ind].trim().split(" ", 3)[1]
-    // currentBalance = parseFloat(data[ind].trim().split(" ", 3)[0])
-    // data = data[ind].split(/(Closing Balance)/)[0]
-    // let closingBalance = parseFloat(data[data.indexOf("Closing Balance") + 1].trim().split(" ", 3)[0])
-    // data = data[0]
-    // const dynamicRegex = new RegExp(`(${transactionStartDate})`);
+    try {
+        const contact = []
+        let transactions
+        let currentBalance
+        let openingBalance
+        let closingBalance = 0.0
+        let totalSpent = 0.0;
+        let totalReceived = 0.0;
 
-    if (bankType === "AXIS") {
-        currentBalance = parseFloat(data[ind].trim().split(" ", 3)[0])
-        closingBalance = parseFloat(text.split(/(Closing Balance)/)[text.split(/(Closing Balance)/).indexOf("Closing Balance") + 1].trim().split("\n")[0].trim())
-        data = data[ind].split(/(Closing Balance)/)[0]
-        transactions = data.split(/(?=\d{2}-\d{2}-\d{4})/);
-        transactions = transactions.map(item => item.replaceAll(",", "").trim()).splice(1)
-    }
-    else if (bankType === "SBI") {
-        closingBalance = parseFloat(data[ind].split(/(Your Closing Balance on)/)[data[ind].split(/(Your Closing Balance on)/).indexOf("Your Closing Balance on") + 1].trim().split(" ")[1].trim())
-        // console.log("closing balance = ", closingBalance)
-        data = data[ind].split(/(Your Closing Balance)/)[0]
-        transactions = data.split(/(?=\d{2}-\d{2}-\d{2})/);
-        currentBalance = parseFloat(transactions[1].trim().split(" ")[3])
-        transactions = transactions.map(item => item.trim()).splice(2)
-        transactions = transactions.map((transaction) => {
-            if (transaction.includes(" Visit https://sbi.co.in ")) {
-                let tempTransaction = transaction.slice(0, transaction.indexOf(" Visit https://sbi.co.in "))
-                return tempTransaction.slice(0, 9) + tempTransaction.slice(9).replaceAll("- ", "").trim()
-            }
-            else if (transaction.includes(" Balance Summary Rs")) {
-                return ""
+        let data = text.split(/(Opening Balance)/)
+        let ind = data.indexOf("Opening Balance") + 1
+
+        if (bankType === "AXIS") {
+            // const regex = /\d{2}-\d{2}-\d{4}.*?\.\d{2}/g;
+            currentBalance = parseFloat(data[ind].trim().split(" ", 3)[0])
+            closingBalance = parseFloat(text.split(/(Closing Balance)/)[text.split(/(Closing Balance)/).indexOf("Closing Balance") + 1].trim().split("\n")[0].trim())
+            data = data[ind].split(/(Closing Balance)/)[0]
+            transactions = data.split(/(?=\d{2}-\d{2}-\d{4})/);
+
+            let elToDel
+            transactions = transactions.map((item, ind) => {
+                // console.log(ind)
+                if (item.includes("SB:") && item.includes(":Int.")) {
+                    // console.log("true")
+                    elToDel = ind
+                    return item + transactions[ind + 1].replaceAll(",", "").trim()
+                }
+                return item.replaceAll(",", "").trim()
+            }).splice(1)
+            transactions = transactions.filter((item, ind) => ind != elToDel)
+
+            // console.log("before splice(1) transactions = ", transactions);
+            // transactions = transactions.map(item => item.replaceAll(",", "").trim()).splice(1)
+            console.log("in axis ", ind);
+        }
+        else if (bankType === "SBI") {
+            closingBalance = parseFloat(data[ind].split(/(Your Closing Balance on)/)[data[ind].split(/(Your Closing Balance on)/).indexOf("Your Closing Balance on") + 1].trim().split(" ")[1].trim())
+            // console.log("closing balance = ", closingBalance)
+            data = data[ind].split(/(Your Closing Balance)/)[0]
+            transactions = data.split(/(?=\d{2}-\d{2}-\d{2})/);
+            currentBalance = parseFloat(transactions[1].trim().split(" ")[3])
+            transactions = transactions.map(item => item.trim()).splice(2)
+            transactions = transactions.map((transaction) => {
+                if (transaction.includes(" Visit https://sbi.co.in ")) {
+                    let tempTransaction = transaction.slice(0, transaction.indexOf(" Visit https://sbi.co.in "))
+                    return tempTransaction.slice(0, 9) + tempTransaction.slice(9).replaceAll("- ", "").trim()
+                }
+                else if (transaction.includes(" Balance Summary Rs")) {
+                    return ""
+                }
+                else {
+                    return transaction.slice(0, 9) + transaction.slice(9).replaceAll("- ", "").trim()
+                }
+            })
+            transactions = transactions.filter((transaction) => transaction !== "")
+        }
+        openingBalance = currentBalance
+        // console.log("Data - ", data);
+
+        console.log("transactions = ", transactions);
+
+
+        let creditedCount = 0
+        let debitedCount = 0
+        transactions = transactions.map((transaction, ind) => {
+            let name, credited, debited
+            // console.log("transaction = ", transaction);
+
+            let transactionBal = parseFloat(transaction.split(" ").at(-1).split(",").join(""))
+            let transactionDateLength = transaction.split(" ").at(0).length
+            let obj = {}
+
+            // console.log("in transactions.map : ", transactionBal, currentBalance);
+
+
+            if (transactionBal > currentBalance) {
+                //credited
+                // console.log(" in if: ", transaction.slice(transactionDateLength));
+                if (transaction.slice(transactionDateLength).trim().startsWith("UPI/")) {
+                    name = transaction.slice(transactionDateLength).split("/")[3].trim()
+                }
+                else {
+
+                    name = transaction.slice(transactionDateLength).trim().split("/")[0].trim()
+                }
+                credited = parseFloat(transaction.split(" ").at(-2))
+                let findIndex = contact.findIndex(item => item.name === name)
+                if (findIndex !== -1) {
+                    contact[findIndex].credited += credited
+                    contact[findIndex].transactionsCount += 1
+                }
+                else {
+                    contact.push({ name: name, debited: 0, credited: credited, transactionsCount: 1 })
+                }
+                totalReceived += credited
+                creditedCount += 1
+                currentBalance = transactionBal
+                obj = { date: transaction.split(" ").at(0), name, credited, debited: 0 }
+
+
             }
             else {
-                return transaction.slice(0, 9) + transaction.slice(9).replaceAll("- ", "").trim()
-            }
-        })
-        transactions = transactions.filter((transaction) => transaction !== "")
-    }
-    openingBalance = currentBalance
-    // console.log("final data = ", data);
-    // console.log("currentBalance = ", currentBalance);
-    // console.log("transactions = ", transactions);
-    // console.log("transactions.length = ", transactions.length); 
-
-
-
-
-
-    // transactions = data.split(/(?=\d{2}-\d{2}-\d{4})/);
-
-    // Clean up the results (trim whitespace)
-    // transactions = transactions.map(item => item.trim()).splice(1)
-
-
-    let creditedCount = 0
-    let debitedCount = 0
-    // let checkObj = []
-    transactions = transactions.map((transaction, ind) => {
-
-
-        let name, credited, debited
-        let transactionBal = parseFloat(transaction.split(" ").at(-1).split(",").join(""))
-        let transactionDateLength = transaction.split(" ").at(0).length
-        let obj = {}
-        // console.log("transactionDate = ", transaction.split(" ").at(0), "transactionDateLength = ", transactionDateLength)
-
-        if (transactionBal > currentBalance) {
-            //credited
-            if (transaction.slice(transactionDateLength).trim().startsWith("UPI/")) {
+                //debited
+                // console.log("in debited : ", transactionBal, currentBalance);
                 name = transaction.slice(transactionDateLength).split("/")[3].trim()
-            }
-            else {
-                name = transaction.slice(transactionDateLength).trim().split("/")[0].trim()
-            }
-            credited = parseFloat(transaction.split(" ").at(-2))
-            let findIndex = contact.findIndex(item => item.name === name)
-            if (findIndex !== -1) {
-                contact[findIndex].credited += credited
-                contact[findIndex].transactionsCount += 1
-            }
-            else {
-                contact.push({ name: name, debited: 0, credited: credited, transactionsCount: 1 })
-            }
-            totalReceived += credited
-            creditedCount += 1
-            currentBalance = transactionBal
-            obj = { date: transaction.split(" ").at(0), name, credited, debited: 0 }
+                debited = parseFloat(transaction.split(" ").at(-2))
+                // console.log("name = ", name, "debited = ", debited, "transactionBal = ", transactionBal, "currentBalance = ", currentBalance)
+                let findIndex = contact.findIndex(item => item.name === name)
+                if (findIndex !== -1) {
+                    contact[findIndex].debited += debited
+                    contact[findIndex].transactionsCount += 1
 
-
-        }
-        else {
-            //debited
-            name = transaction.slice(transactionDateLength).split("/")[3].trim()
-            debited = parseFloat(transaction.split(" ").at(-2))
-            // console.log("name = ", name, "debited = ", debited, "transactionBal = ", transactionBal, "currentBalance = ", currentBalance)
-            let findIndex = contact.findIndex(item => item.name === name)
-            if (findIndex !== -1) {
-                contact[findIndex].debited += debited
-                contact[findIndex].transactionsCount += 1
+                }
+                else {
+                    contact.push({ name: name, debited: debited, credited: 0, transactionsCount: 1 })
+                }
+                totalSpent += debited
+                debitedCount += 1
+                currentBalance = transactionBal
+                obj = { date: transaction.split(" ").at(0), name, credited: 0, debited }
 
             }
-            else {
-                contact.push({ name: name, debited: debited, credited: 0, transactionsCount: 1 })
-            }
-            totalSpent += debited
-            debitedCount += 1
-            currentBalance = transactionBal
-            obj = { date: transaction.split(" ").at(0), name, credited: 0, debited }
 
-        }
+            return obj
 
-        return obj
+        })
 
-    })
+        let totalTransactionsCount = contact.reduce((acc, item) => acc + item.transactionsCount, 0)
 
-    let totalTransactionsCount = contact.reduce((acc, item) => acc + item.transactionsCount, 0)
-    // console.log("creditedCount = ", creditedCount, "debitedCount = ", debitedCount, "credited+debited = ", creditedCount + debitedCount)
-    // console.log("totalTransactionsCount = ", totalTransactionsCount);
-    // console.log("checkObj = ", checkObj);
-    // console.log("checkObj.length = ", checkObj.length); 
+        return { contact, transactionsLength: transactions.length, totalTransactionsCount, totalSpent, totalReceived, openingBalance, closingBalance, transactions }
+    } catch (error) {
+        console.log("Error in contact wise: ", error.message);
 
 
-    return { contact, transactionsLength: transactions.length, totalTransactionsCount, totalSpent, totalReceived, openingBalance, closingBalance, transactions }
-
-
-    // largeData = {data}
-    // console.dir(largeData,{depth: null, maxArrayLength: null});
+    }
 
 
 }
@@ -233,53 +235,6 @@ const getTransactionPeriod = (text, bankType) => {
 
 }
 
-function parseBankStatement(statementText) {
-    let totalSpent = 0.0;
-    let totalReceived = 0.0;
-
-    // 1. Extract Opening Balance
-    // Pattern looks for "Opening Balance" followed by a number
-    const openingBalanceMatch = statementText.match(/Opening Balance\s+([\d,]+\.\d{2})/);
-    let currentBalance = openingBalanceMatch ? parseFloat(openingBalanceMatch[1].replace(/,/g, '')) : 0.0;
-
-
-
-    // 2. Extract Transactions
-    // Regex breakdown:
-    // (\d{2}-\d{2}-\d{4}) -> Date (Group 1)
-    // .*?                 -> Any text (description)
-    // ([\d,]+\.\d{2})     -> Transaction Amount (Group 2)
-    // \s+
-    // ([\d,]+\.\d{2})     -> Resulting Balance (Group 3)
-    // 'g' flag to find all matches
-    const transactionPattern = /(\d{2}-\d{2}-\d{4}).*?([\d,]+\.\d{2})\s+([\d,]+\.\d{2})/g;
-
-    let match;
-    while ((match = transactionPattern.exec(statementText)) !== null) {
-        let amount = parseFloat(match[2].replace(/,/g, ''));
-        let newBalance = parseFloat(match[3].replace(/,/g, ''));
-
-        // Determine if it is Credit or Debit by comparing balance
-        // Rounding to 2 decimal places to avoid floating point errors
-        let diff = (newBalance - currentBalance).toFixed(2);
-
-        if (parseFloat(diff) > 0) {
-            totalReceived += amount;
-        } else {
-            totalSpent += amount;
-        }
-
-        // Update current balance for the next iteration
-        currentBalance = newBalance;
-    }
-
-    // 3. Return Results
-    return {
-        totalSpent: totalSpent.toFixed(2),
-        totalReceived: totalReceived.toFixed(2),
-        netAmount: currentBalance.toFixed(2)
-    };
-}
 
 
 
